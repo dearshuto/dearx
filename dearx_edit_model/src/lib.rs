@@ -1,14 +1,13 @@
-use sje_generator_macro::Immutable;
 use std::sync::Arc;
+use sje_immutable_macro::Immutable;
 
 pub mod components;
 mod float3;
-mod game_object;
 pub use float3::Float3;
-pub use game_object::GameObject;
 
 #[derive(Immutable)]
-pub struct TestData {
+pub struct TestData
+{
     pub value: i32,
 }
 

@@ -3,7 +3,5 @@ members = [
     "dearx_app",
     "dearx_edit_model",
     "dearx_editor",
-    "dearx_gfx",
     "dearx_serialization",
-    "dearx_viewer"
 ]
