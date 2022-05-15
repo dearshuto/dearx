@@ -1,4 +1,9 @@
-pub mod model;
+pub mod component;
+pub mod domain;
+mod renderer;
+mod scene;
+pub use renderer::Renderer;
+pub use scene::Scene;
 
 #[cfg(test)]
 mod tests {

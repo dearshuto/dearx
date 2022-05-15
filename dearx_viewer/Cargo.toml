@@ -1,12 +1,10 @@
 [package]
-name = "dearx_editor"
+name = "dearx_viewer"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-egui = "0.18.1"
-eframe = "*"
-tokio = { version = "1.18.2", features = ["full"] }
-dearx_edit_model = { path = "../dearx_edit_model" }
+winit = "0.26.1"
+dearx_gfx = { path = "../dearx_gfx" }

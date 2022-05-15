@@ -1,4 +1,3 @@
-#[derive(Clone, Copy)]
 pub struct Float3 {
     pub x: f32,
     pub y: f32,
