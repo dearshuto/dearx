@@ -8,3 +8,6 @@ edition = "2021"
 [dependencies]
 winit = "0.26.1"
 dearx_gfx = { path = "../dearx_gfx" }
+sjvi = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
