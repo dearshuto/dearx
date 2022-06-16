@@ -7,5 +7,4 @@ members = [
     "dearx_gfx",
     "dearx_presentation",
     "dearx_serialization",
-    "dearx_viewer"
 ]

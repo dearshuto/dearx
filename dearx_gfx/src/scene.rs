@@ -1,15 +1,20 @@
+use sjgfx::api::IApi;
+
 use crate::component::{GeometryComponent, TransformComponent};
 
-pub struct Scene {
+pub struct Scene<TApi: IApi> {
     transforms: Vec<TransformComponent>,
-    geometries: Vec<GeometryComponent>,
+    geometries: Vec<GeometryComponent<TApi>>,
 }
 
-impl Scene {
-    pub fn new() -> Self {
+impl<TApi: IApi> Scene<TApi> {
+    pub fn new(device: &TApi::Device) -> Self {
+        let transform = TransformComponent::new();
+        let geometry = GeometryComponent::<TApi>::new(device, 0 /*transform_index*/);
+
         Self {
-            transforms: Vec::new(),
-            geometries: Vec::new(),
+            transforms: vec![transform],
+            geometries: vec![geometry],
         }
     }
 
@@ -22,7 +27,7 @@ impl Scene {
         // ジオメトリの更新
         for geometry in &mut self.geometries {
             let index = geometry.get_transform_index();
-            let transform = &self.transforms[index as usize];
+            let transform = &mut self.transforms[index as usize];
 
             geometry.update(transform);
         }
@@ -32,7 +37,7 @@ impl Scene {
         &self.transforms
     }
 
-    pub fn geometries(&self) -> &[GeometryComponent] {
+    pub fn geometries(&self) -> &[GeometryComponent<TApi>] {
         &self.geometries
     }
 }

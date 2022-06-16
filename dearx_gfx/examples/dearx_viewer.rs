@@ -21,7 +21,7 @@ fn run<TApi: IApi>() {
     let mut command_buffer = TCommandBufferBuilder::<TApi>::new().build(&device);
     let mut semaphore = TSemaphoreBuilder::<TApi>::new().build(&device);
 
-    let mut scene = Scene::new();
+    let mut scene = Scene::<TApi>::new(&device);
     let mut renderer = Renderer::<TApi>::new(&device);
 
     while instance.try_update() {
@@ -35,7 +35,7 @@ fn run<TApi: IApi>() {
             command_buffer.end();
             queue.execute(&command_buffer);
 
-            renderer.make_command(&scene);
+            renderer.make_command(&scene, &color_target_view);
 
             for command_buffer in renderer.get_command_buffers() {
                 queue.execute(command_buffer);
