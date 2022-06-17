@@ -20,40 +20,19 @@ pub struct GeometryComponent<TApi: IApi> {
 
 impl<TApi: IApi> GeometryComponent<TApi> {
     pub fn new(device: &TApi::Device, transform_index: u32) -> Self {
-        // 頂点バッファ
-        let vertex_data = [
-            -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-            1.0,
-        ];
-        let vertex_buffer = TBufferBuilder::<TApi>::new()
-            .enable_vertex_buffer()
-            .with_size(std::mem::size_of::<f32>() * vertex_data.len())
-            .build(device);
-        vertex_buffer.map_as_slice_mut(|data: &mut [f32]| {
-            data.clone_from_slice(&vertex_data);
-        });
-
-        // インデックスバッファ
-        let index_data = [0, 1, 2];
-        let index_buffer = TBufferBuilder::<TApi>::new()
-            .enable_index_buffer()
-            .with_size(std::mem::size_of::<u32>() * index_data.len())
-            .build(device);
-        index_buffer.map_as_slice_mut(|data: &mut [u32]| {
-            data.clone_from_slice(&index_data);
-        });
-
+        let obj_data =
+            sjgfx_util::load_obj(device, include_str!("../../../resources/models/cube.obj"));
         let constant_buffer = TBufferBuilder::<TApi>::new()
             .enable_constant_buffer()
             .with_size(std::mem::size_of::<ViewData>())
             .build(device);
 
         Self {
-            vertex_buffer,
-            index_buffer,
+            vertex_buffer: obj_data.vertex_buffer,
+            index_buffer: obj_data.index_buffer,
             constant_buffer,
             transform_index,
-            index_count: index_data.len() as i32,
+            index_count: obj_data.index_count,
         }
     }
 

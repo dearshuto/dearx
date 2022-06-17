@@ -12,5 +12,6 @@ layout(binding = 2) uniform Light {
 
 void main() {
   float diffuse = max(0.0, dot(u_LightDirection.xyz, v_Normal));
-  o_Color = vec4(vec3(diffuse) + vec3(0.5), 1.0);
+  // o_Color = vec4(vec3(diffuse) + vec3(0.1), 1.0);
+  o_Color = vec4(v_Normal + vec3(0.1), 1.0);
 }
