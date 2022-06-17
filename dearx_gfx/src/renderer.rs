@@ -1,11 +1,12 @@
 extern crate nalgebra_glm as glm;
 
 use sjgfx::{
-    api::IApi, TBufferBuilder, TCommandBufferBuilder, TShaderBuilder, TVertexStateBuilder,
+    api::IApi, TBufferBuilder, TCommandBufferBuilder, TShaderBuilder, TTextureBuilder,
+    TVertexStateBuilder,
 };
 use sjgfx_interface::{
-    AttributeFormat, IBuffer, ICommandBuffer, IndexFormat, PrimitiveTopology,
-    VertexAttributeStateInfo, VertexBufferStateInfo,
+    AttributeFormat, DepthStencilStateInfo, IBuffer, ICommandBuffer, IDepthStencilView,
+    ImageFormat, IndexFormat, PrimitiveTopology, VertexAttributeStateInfo, VertexBufferStateInfo,
 };
 
 use crate::Scene;
@@ -22,6 +23,9 @@ struct ViewData {
 }
 
 pub struct Renderer<TApi: IApi> {
+    #[allow(dead_code)]
+    depth_buffer: TApi::Texture,
+    depth_stencil_view: TApi::DepthStencilView,
     basic_shader: TApi::Shader,
     view_constant_buffer: TApi::Buffer,
     light_constant_buffer: TApi::Buffer,
@@ -94,10 +98,20 @@ impl<TApi: IApi> Renderer<TApi> {
                 )
                 .build(device);
 
+        let depth_buffer = TTextureBuilder::<TApi>::new()
+            .enable_depth_buffer()
+            .with_format(ImageFormat::D32)
+            .with_size(1280, 960)
+            .build(device);
+        let depth_stencil_view =
+            TApi::DepthStencilView::new(device, &DepthStencilStateInfo::new(), &depth_buffer);
+
         // コマンドバッファ
         let command_buffer = TCommandBufferBuilder::<TApi>::new().build(device);
 
         Self {
+            depth_buffer,
+            depth_stencil_view,
             basic_shader: shader,
             view_constant_buffer: constnat_buffer,
             light_constant_buffer,
@@ -109,7 +123,8 @@ impl<TApi: IApi> Renderer<TApi> {
     pub fn make_command(&mut self, scene: &Scene<TApi>, color_target_view: &TApi::ColorTargetView) {
         for geometry in scene.geometries() {
             self.command_buffers[0].begin();
-            self.command_buffers[0].set_render_targets(&[color_target_view], None);
+            self.command_buffers[0]
+                .set_render_targets(&[color_target_view], Some(&self.depth_stencil_view));
             self.command_buffers[0].set_shader(&self.basic_shader);
             self.command_buffers[0].set_constant_buffer(0, geometry.get_model_data());
             self.command_buffers[0].set_constant_buffer(1, &self.view_constant_buffer);
