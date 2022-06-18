@@ -1,5 +1,8 @@
-use dearx_gfx::{Renderer, Scene};
-use sjgfx::{api::IApi, TDeviceBuilder, TQueueBuilder, TSwapChainBuilder, TCommandBufferBuilder, TSemaphoreBuilder};
+use dearx_gfx::{Renderer, Scene, SceneUpdater};
+use sjgfx::{
+    api::IApi, TCommandBufferBuilder, TDeviceBuilder, TQueueBuilder, TSemaphoreBuilder,
+    TSwapChainBuilder,
+};
 use sjgfx_interface::{ICommandBuffer, IQueue, ISwapChain, TextureArrayRange};
 
 fn main() {
@@ -17,7 +20,10 @@ fn run<TApi: IApi>() {
             .build_with_surface(&display.window, instance.get_event_loop())
     };
     let mut queue = TQueueBuilder::<TApi>::new().build(&device);
-    let mut swap_chain = TSwapChainBuilder::<TApi>::new().with_width(1280).with_height(960).build(&mut device);
+    let mut swap_chain = TSwapChainBuilder::<TApi>::new()
+        .with_width(1280)
+        .with_height(960)
+        .build(&mut device);
     let mut command_buffer = TCommandBufferBuilder::<TApi>::new().build(&device);
     let mut semaphore = TSemaphoreBuilder::<TApi>::new().build(&device);
 
@@ -27,11 +33,20 @@ fn run<TApi: IApi>() {
     while instance.try_update() {
         let display = instance.try_get_display(id).unwrap();
         if display.is_redraw_requested() {
-            scene.update();
+            let scene_updater = SceneUpdater::new();
+            scene_updater.update(&mut scene);
 
-            let mut color_target_view = swap_chain.acquire_next_scan_buffer_view(Some(&mut semaphore), None);
+            let mut color_target_view =
+                swap_chain.acquire_next_scan_buffer_view(Some(&mut semaphore), None);
             command_buffer.begin();
-            command_buffer.clear_color(&mut color_target_view, 0.0, 0.0, 0.1, 0.0, TextureArrayRange::new());
+            command_buffer.clear_color(
+                &mut color_target_view,
+                0.0,
+                0.0,
+                0.1,
+                0.0,
+                TextureArrayRange::new(),
+            );
             command_buffer.end();
             queue.execute(&command_buffer);
 

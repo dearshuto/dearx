@@ -3,7 +3,7 @@ pub mod domain;
 mod renderer;
 mod scene;
 pub use renderer::Renderer;
-pub use scene::Scene;
+pub use scene::{Scene, SceneUpdater};
 
 #[cfg(test)]
 mod tests {

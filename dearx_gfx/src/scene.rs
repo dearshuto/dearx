@@ -1,43 +1,70 @@
-use sjgfx::api::IApi;
+extern crate nalgebra_glm as glm;
 
-use crate::component::{GeometryComponent, TransformComponent};
+use crate::component::GeometryContainer;
+use sjgfx::api::IApi;
+use sjgfx_interface::IBuffer;
+
+use crate::component::TransformComponent;
+
+#[repr(C)]
+struct ViewData {
+    model_matrix: glm::Mat4x4,
+}
 
 pub struct Scene<TApi: IApi> {
     transforms: Vec<TransformComponent>,
-    geometries: Vec<GeometryComponent<TApi>>,
+    geometry_container: GeometryContainer<TApi>,
 }
 
 impl<TApi: IApi> Scene<TApi> {
     pub fn new(device: &TApi::Device) -> Self {
         let transform = TransformComponent::new();
-        let geometry = GeometryComponent::<TApi>::new(device, 0 /*transform_index*/);
 
         Self {
             transforms: vec![transform],
-            geometries: vec![geometry],
+            geometry_container: GeometryContainer::new(device),
         }
     }
 
-    pub fn update(&mut self) {
-        // トランスフォームの更新
-        for transform in &mut self.transforms {
-            transform.update();
-        }
+    pub fn get_geometry_container(&self) -> &GeometryContainer<TApi> {
+        &self.geometry_container
+    }
 
-        // ジオメトリの更新
-        for geometry in &mut self.geometries {
-            let index = geometry.get_transform_index();
-            let transform = &mut self.transforms[index as usize];
-
-            geometry.update(transform);
-        }
+    pub fn get_geometry_container_mut(&mut self) -> &mut GeometryContainer<TApi> {
+        &mut self.geometry_container
     }
 
     pub fn transforms(&self) -> &[TransformComponent] {
         &self.transforms
     }
 
-    pub fn geometries(&self) -> &[GeometryComponent<TApi>] {
-        &self.geometries
+    pub fn transforms_mut(&mut self) -> &mut [TransformComponent] {
+        &mut self.transforms
+    }
+}
+
+pub struct SceneUpdater<TApi: IApi> {
+    _marker: std::marker::PhantomData<TApi>,
+}
+
+impl<TApi: IApi> SceneUpdater<TApi> {
+    pub fn new() -> Self {
+        Self {
+            _marker: std::marker::PhantomData,
+        }
+    }
+
+    pub fn update(&self, scene: &mut Scene<TApi>) {
+        // トランスフォームの更新
+        for transform in scene.transforms_mut() {
+            transform.update();
+        }
+
+        // ジオメトリの更新
+        for constant_buffer in scene.get_geometry_container_mut().get_constant_buffers() {
+            constant_buffer.map_mut(|data: &mut ViewData| {
+                data.model_matrix = glm::Mat4x4::identity();
+            });
+        }
     }
 }
