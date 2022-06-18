@@ -1,4 +1,6 @@
-use dearx_presentation::{DesignView, IDesignViewViewModel};
+use dearx_presentation::{
+    DesignView, IDesignViewViewModel, IPropertyWindowViewModel, PropertyWindow,
+};
 use egui_winit_platform::{Platform, PlatformDescriptor};
 use epi::egui::FontDefinitions;
 use gfx_egui::RenderPass;
@@ -47,6 +49,12 @@ impl<TApi: sjgfx::api::IApi> IDesignViewViewModel<TApi> for ViewModel<TApi> {
     }
 }
 
+impl<TApi: sjgfx::api::IApi> IPropertyWindowViewModel for ViewModel<TApi> {
+    fn get_translation(&self) -> (f32, f32, f32) {
+        (1.0, 2.0, 3.0)
+    }
+}
+
 #[tokio::main]
 async fn main() {
     run::<sjgfx::api::Wgpu>();
@@ -79,11 +87,12 @@ fn run<TApi: IApi>() {
     let mut command_buffer = TCommandBufferBuilder::<TApi>::new().build(&device);
     let mut semaphore = TSemaphoreBuilder::<TApi>::new().build(&device);
 
-    let _render_pass = RenderPass::<TApi>::new(&device);
+    let mut render_pass = RenderPass::<TApi>::new(&device);
 
     let _workspace = Workspace::<i32>::new();
 
     let mut design_view = DesignView::<TApi, ViewModel<TApi>>::new(&device, ViewModel::new());
+    let mut property_window = PropertyWindow::<ViewModel<TApi>>::new(ViewModel::new());
 
     while instance.try_update() {
         let display = instance.try_get_display(id).unwrap();
@@ -103,13 +112,23 @@ fn run<TApi: IApi>() {
             );
             command_buffer.end();
 
-            platform.update_time(1.0 / 60.0);
-            // platform.begin_frame();
-            // let context = platform.context();
-            // platform.end_frame(window);
-
             // DesignView
             design_view.process_frame(&mut queue);
+
+            platform.update_time(1.0 / 60.0);
+            platform.begin_frame();
+            let mut context = platform.context();
+            let (_output, paint_commands) =
+                context.run(epi::egui::RawInput::default(), |context| {
+                    property_window.process_frame(context);
+                });
+            context.request_repaint();
+            platform.end_frame(Some(&display.window));
+
+            let paint_jobs = platform.context().tessellate(paint_commands);
+            render_pass.update_buffers(&device, &paint_jobs);
+            render_pass.update_texture(&device, &platform.context().font_image());
+            render_pass.execute(&next_scan_buffer_view, &mut queue, &paint_jobs);
 
             queue.execute(&command_buffer);
             queue.present(&mut swap_chain);

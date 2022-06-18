@@ -8,6 +8,8 @@ edition = "2021"
 [dependencies]
 sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+egui = "*"
+epi = "*"
 
 [build-dependencies]
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git" }
