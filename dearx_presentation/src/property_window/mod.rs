@@ -12,7 +12,7 @@ impl<TViewModel: IPropertyWindowViewModel> PropertyWindow<TViewModel> {
         Self { view_model }
     }
 
-    pub fn process_frame(&mut self, context: &egui::CtxRef) {
+    pub fn process_frame(&mut self, context: &epi::egui::CtxRef) {
         epi::egui::Window::new("Property Window").show(context, |ui| {
             ui.label("Hello World");
             ui.label("I am PropertyWindow");
