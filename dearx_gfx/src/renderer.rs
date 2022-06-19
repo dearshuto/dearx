@@ -121,25 +121,31 @@ impl<TApi: IApi> Renderer<TApi> {
     }
 
     pub fn make_command(&mut self, scene: &Scene<TApi>, color_target_view: &TApi::ColorTargetView) {
-        for geometry in scene.geometries() {
-            self.command_buffers[0].begin();
-            self.command_buffers[0]
-                .set_render_targets(&[color_target_view], Some(&self.depth_stencil_view));
-            self.command_buffers[0].set_shader(&self.basic_shader);
-            self.command_buffers[0].set_constant_buffer(0, geometry.get_model_data());
-            self.command_buffers[0].set_constant_buffer(1, &self.view_constant_buffer);
-            self.command_buffers[0].set_constant_buffer(2, &self.light_constant_buffer);
-            self.command_buffers[0].set_vertex_state(&self.vertex_state);
-            self.command_buffers[0].set_vertex_buffer(0, geometry.get_vertex_buffer());
-            self.command_buffers[0].draw_indexed(
-                PrimitiveTopology::TriangleList,
-                IndexFormat::Uint32,
-                geometry.get_index_buffer(),
-                geometry.get_index_count(),
-                0, /*base_vertex*/
-            );
-            self.command_buffers[0].end();
-        }
+        let geometry_container = scene.get_geometry_container();
+
+        // TODO: 可変ジオメトリ対応
+        let vertex_buffer = &geometry_container.get_vertex_buffers()[0];
+        let index_buffer = &geometry_container.get_index_buffers()[0];
+        let constant_buffer = &geometry_container.get_constant_buffers()[0];
+        let index_count = geometry_container.get_index_counts()[0];
+
+        self.command_buffers[0].begin();
+        self.command_buffers[0]
+            .set_render_targets(&[color_target_view], Some(&self.depth_stencil_view));
+        self.command_buffers[0].set_shader(&self.basic_shader);
+        self.command_buffers[0].set_constant_buffer(0, constant_buffer);
+        self.command_buffers[0].set_constant_buffer(1, &self.view_constant_buffer);
+        self.command_buffers[0].set_constant_buffer(2, &self.light_constant_buffer);
+        self.command_buffers[0].set_vertex_state(&self.vertex_state);
+        self.command_buffers[0].set_vertex_buffer(0, vertex_buffer);
+        self.command_buffers[0].draw_indexed(
+            PrimitiveTopology::TriangleList,
+            IndexFormat::Uint32,
+            index_buffer,
+            index_count,
+            0, /*base_vertex*/
+        );
+        self.command_buffers[0].end();
     }
 
     pub fn get_command_buffers(&self) -> &[TApi::CommandBuffer] {
