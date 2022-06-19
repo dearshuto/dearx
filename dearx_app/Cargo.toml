@@ -6,3 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjvi = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+dearx_gfx = { path = "../dearx_gfx" }
+nalgebra-glm = "0.3"
