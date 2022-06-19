@@ -10,6 +10,7 @@ use sjgfx::{
     TSwapChainBuilder,
 };
 use sjgfx_interface::{ICommandBuffer, IQueue, ISwapChain, TextureArrayRange};
+use sjvi::IDisplayEventListener;
 
 struct ExampleRepaintSignal;
 
@@ -60,7 +61,10 @@ async fn main() {
     run::<sjgfx::api::Wgpu>();
 }
 
-fn run<TApi: IApi>() {
+fn run<TApi: IApi>()
+where
+    <TApi as IApi>::SwapChain: IDisplayEventListener,
+{
     let mut instance = sjvi::Instance::new();
     let id = instance.create_display_with_size(2560, 1920);
 
@@ -94,7 +98,7 @@ fn run<TApi: IApi>() {
     let mut design_view = DesignView::<TApi, ViewModel<TApi>>::new(&device, ViewModel::new());
     let mut property_window = PropertyWindow::<ViewModel<TApi>>::new(ViewModel::new());
 
-    while instance.try_update() {
+    while instance.try_update_direct_event_callback(|event| platform.handle_event(&event)) {
         let display = instance.try_get_display(id).unwrap();
 
         if display.is_redraw_requested() {
