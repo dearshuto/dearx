@@ -1,4 +1,7 @@
+mod manipulator;
 pub mod model;
+
+pub use manipulator::{CameraData, Manipulator};
 
 #[cfg(test)]
 mod tests {

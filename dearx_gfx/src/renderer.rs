@@ -151,4 +151,19 @@ impl<TApi: IApi> Renderer<TApi> {
     pub fn get_command_buffers(&self) -> &[TApi::CommandBuffer] {
         &self.command_buffers
     }
+
+    pub fn set_view_matrix(&self, view_matrix: &glm::Mat4x4) {
+        // 定数バッファ
+        self.view_constant_buffer.map_mut(|data: &mut ViewData| {
+            // 投影行列
+            let field_of_view = std::f32::consts::PI / 4.0;
+            let aspect = 640.0 / 480.0;
+            let near = 0.1;
+            let far = 100.0;
+            let projection_matrix = glm::perspective(aspect, field_of_view, near, far);
+
+            // 定数バッファに書き込み
+            data.projection_view_matrix = projection_matrix * view_matrix;
+        });
+    }
 }
