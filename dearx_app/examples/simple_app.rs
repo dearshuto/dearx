@@ -33,12 +33,23 @@ fn run<TApi: IApi>() {
     let mut renderer = Renderer::<TApi>::new(&device);
 
     let mut camera_data = CameraData::default();
-    let manipulator = Manipulator::new();
+    let mut manipulator: Option<Manipulator> = None;
 
     while instance.try_update() {
         let display = instance.try_get_display(id).unwrap();
         if display.is_redraw_requested() {
-            manipulator.manipulate(&mut camera_data);
+            for event in display.get_mouse_events() {
+                if let Some(manipulator_unwrap) = manipulator {
+                    manipulator = manipulator_unwrap.push(&event);
+                } else {
+                    manipulator = Manipulator::try_new(event, &camera_data);
+                }
+            }
+            if let Some(manipulator_unwrap) = &manipulator {
+                if let Some(new_camera_data) = manipulator_unwrap.try_calculate() {
+                    camera_data = new_camera_data;
+                }
+            }
 
             let scene_updater = SceneUpdater::new();
             scene_updater.update(&mut scene);
