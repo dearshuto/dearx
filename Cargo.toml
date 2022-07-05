@@ -7,4 +7,5 @@ members = [
     "dearx_gfx",
     "dearx_presentation",
     "dearx_serialization",
+    "src-tauri"
 ]
