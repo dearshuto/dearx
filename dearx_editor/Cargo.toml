@@ -15,7 +15,7 @@ tokio = { version = "1.18.2", features = ["full"] }
 gfx-egui = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-sjvi = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjvi = { git = "https://github.com/dearshuto/vi-rs.git", branch = "develop" }
 sje_workspace = { git = "https://github.com/dearshuto/sj_editor_framework_rs.git" }
 dearx_app = { path = "../dearx_app" }
 dearx_edit_model = { path = "../dearx_edit_model" }
