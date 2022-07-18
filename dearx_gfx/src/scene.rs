@@ -17,7 +17,7 @@ pub struct Scene<TApi: IApi> {
 }
 
 impl<TApi: IApi> Scene<TApi> {
-    pub fn new(device: &TApi::Device) -> Self {
+    pub fn new(device: &mut TApi::Device) -> Self {
         let transform = TransformComponent::new();
 
         Self {

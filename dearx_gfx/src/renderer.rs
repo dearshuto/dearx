@@ -34,7 +34,7 @@ pub struct Renderer<TApi: IApi> {
 }
 
 impl<TApi: IApi> Renderer<TApi> {
-    pub fn new(device: &TApi::Device) -> Self {
+    pub fn new(device: &mut TApi::Device) -> Self {
         // シェーダ
         let shader = TShaderBuilder::<TApi>::new()
             .set_vertex_shader_binary(include_bytes!("../outputs/resources/shaders/basic.vs.spv"))

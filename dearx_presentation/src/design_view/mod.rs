@@ -17,7 +17,7 @@ where
     TApi: IApi,
     TViewModel: IDesignViewViewModel<TApi>,
 {
-    pub fn new(device: &TApi::Device, view_model: TViewModel) -> Self {
+    pub fn new(device: &mut TApi::Device, view_model: TViewModel) -> Self {
         let command_buffer = TCommandBufferBuilder::<TApi>::new().build(device);
         let constant_buffer = TBufferBuilder::<TApi>::new()
             .enable_constant_buffer()
