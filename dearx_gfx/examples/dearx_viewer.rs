@@ -4,22 +4,27 @@ use sjgfx::{
     TSwapChainBuilder,
 };
 use sjgfx_interface::{ICommandBuffer, IQueue, ISwapChain, TextureArrayRange};
+use sjvi::{IInstance, IDisplay};
 
 fn main() {
+    #[cfg(not(target_arch = "wasm32"))]
     run::<sjgfx::api::Wgpu>();
+
+    #[cfg(target_arch = "wasm32")]
+    run::<sjgfx::api::Wsys>();
 }
 
 fn run<TApi: IApi>() {
-    let mut instance = sjvi::Instance::new();
-    let id = instance.create_display_with_size(1280, 960);
+    let mut instance = TApi::Instance::new();
+    let id = instance.create_display();
 
     let mut device = {
-        let display = instance.try_get_display(id).unwrap();
+        let display = instance.try_get_display(&id).unwrap();
         TDeviceBuilder::<TApi>::new()
             .enable_debug_assertion()
-            .build_with_surface(&display.window, instance.get_event_loop())
+            .build_with_surface(&display)
     };
-    let mut queue = TQueueBuilder::<TApi>::new().build(&device);
+    let mut queue = TQueueBuilder::<TApi>::new().build(&mut device);
     let mut swap_chain = TSwapChainBuilder::<TApi>::new()
         .with_width(1280)
         .with_height(960)
@@ -27,11 +32,11 @@ fn run<TApi: IApi>() {
     let mut command_buffer = TCommandBufferBuilder::<TApi>::new().build(&device);
     let mut semaphore = TSemaphoreBuilder::<TApi>::new().build(&device);
 
-    let mut scene = Scene::<TApi>::new(&device);
-    let mut renderer = Renderer::<TApi>::new(&device);
+    let mut scene = Scene::<TApi>::new(&mut device);
+    let mut renderer = Renderer::<TApi>::new(&mut device);
 
     while instance.try_update() {
-        let display = instance.try_get_display(id).unwrap();
+        let display = instance.try_get_display(&id).unwrap();
         if display.is_redraw_requested() {
             let scene_updater = SceneUpdater::new();
             scene_updater.update(&mut scene);
