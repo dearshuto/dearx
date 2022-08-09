@@ -1,22 +1,28 @@
 [package]
 name = "dearx_editor"
 version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+license = ""
+repository = ""
+default-run = "dearx_editor"
 edition = "2021"
+rust-version = "1.57"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[build-dependencies]
+tauri-build = { version = "1.0.4" }
+
 [dependencies]
-winit = "0.26.1"
-epi = "0.16"
-egui = "0.18.1"
-egui_winit_platform = "0.13"
-eframe = "*"
-tokio = { version = "1.18.2", features = ["full"] }
-gfx-egui = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-sjvi = { git = "https://github.com/dearshuto/vi-rs.git", branch = "develop" }
-sje_workspace = { git = "https://github.com/dearshuto/sj_editor_framework_rs.git" }
-dearx_app = { path = "../dearx_app" }
-dearx_edit_model = { path = "../dearx_edit_model" }
-dearx_presentation = { path = "../dearx_presentation" }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "1.0.5", features = [ "api-all" ] }
+
+[features]
+# by default Tauri runs in production mode
+# when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
+default = [ "custom-protocol" ]
+# this feature is used used for production builds where `devPath` points to the filesystem
+# DO NOT remove this
+custom-protocol = [ "tauri/custom-protocol" ]
