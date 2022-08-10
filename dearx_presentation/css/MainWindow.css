@@ -1,0 +1,75 @@
+img{
+  max-width: 100%;
+}
+h1{
+  margin-top: 0;
+}
+.a{
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
+.a .logo{
+  width: 100px;
+  margin-top: 36px;
+  margin-left: 4%;  
+ 
+}
+.header{
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 4%;
+  background-color: #6fb5ff;
+}
+.main{
+  float: left;
+  width: 80%;
+  height: auto;
+  padding: 0px;
+  background-color: #EEEEEE;
+}
+.side{
+  width: 20%;
+  height: auto;
+  margin: 0 auto;
+  padding: 0px;
+  background-color: #DDDDFF;
+}
+.footer{
+  text-align: center;
+  margin: 0 auto;
+  padding: 10px;
+  height: 5%;
+  background-color: #ffce5b;
+}
+.b{
+  letter-spacing: -.4em;
+  font-size: 18px;
+  margin-bottom: 0;
+  list-style: none;
+  padding: 0;
+}
+.b li{
+  letter-spacing: normal;
+  display: inline-block;
+  width: calc(100%/6);
+}
+.b li a{
+  display: block;
+  text-decoration: none;
+  position: relative;
+  text-align: center;
+  padding: 0px 0px;
+  text-transform: none;
+  color: #1a1a1a;
+  text-decoration: none;
+}
+.c{
+  display: flex;
+  height: 85vh;
+  margin: 0 auto;
+}
+.h-img{
+  max-height: 400px;
+  min-width: 1200px;
+}
