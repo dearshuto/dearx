@@ -3,6 +3,17 @@
 </head>
 
 <body>
+  <script>
+    function func() {
+      window.__TAURI__
+        .invoke("my_custom_command")
+        .then((response) => {
+        })
+        .catch((error) => {
+        })
+    }
+  </script>
+
   <div class="a">
     <header class="header">
       <nav class="h-nav">
@@ -17,7 +28,7 @@
     </header>
     <!-- <img class="h-img" src="img/sea.jpg" alt="sea"> -->
     <div class="c">
-      <main class="main">DesignView</main>
+      <main class="main"><button onclick="func()">AB</button></main>
       <aside class="side">
         <p>X<input type="number" step="0.1" /></p>
         <p>Y<input type="number" step="0.1" /></p>
