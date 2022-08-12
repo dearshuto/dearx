@@ -53,6 +53,9 @@
     let input = document.getElementById('input_x');
     input.value = 0;
 
+    window.__TAURI__.event.listen('back-to-front', event => {
+      console.log(`back-to-front ${event.payload} ${new Date()}`)
+    });
   </script>
 
 </body>
