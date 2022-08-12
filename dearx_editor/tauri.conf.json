@@ -3,7 +3,8 @@
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
     "devPath": "../dearx_presentation",
-    "distDir": "../dearx_presentation"
+    "distDir": "../dearx_presentation",
+    "withGlobalTauri": true
   },
   "package": {
     "productName": "dearx",
