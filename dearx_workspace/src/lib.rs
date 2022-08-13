@@ -3,7 +3,7 @@ mod document_info;
 mod observable;
 mod project;
 mod workspace;
-pub use document::Document;
+pub use document::{Document, DocumentId};
 pub use document_info::DocumentInfo;
 pub use workspace::Workspace;
 
