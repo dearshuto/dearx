@@ -6,4 +6,6 @@ members = [
     "dearx_editor",
     "dearx_gfx",
     "dearx_serialization",
+    "dearx_macro",
+    "dearx_workspace",
 ]

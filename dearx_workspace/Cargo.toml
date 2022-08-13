@@ -1,0 +1,16 @@
+[package]
+name = "dearx_workspace"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+uuid = { version = "1.0.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
+im = "*"
+tokio = { version = "1.18.2", features = ["full"] }
+dearx_macro = { path = "../dearx_macro" }
+
+[dev-dependencies]
+egui = "0.18.1"
+eframe = "*"
