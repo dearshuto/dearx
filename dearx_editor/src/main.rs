@@ -3,7 +3,14 @@
   windows_subsystem = "windows"
 )]
 
+use std::sync::Arc;
 use tauri::Manager;
+use dearx_macro::Immutable;
+
+#[derive(Immutable)]
+struct TestData {
+    pub x: f32,
+}
 
 #[tauri::command]
 fn my_custom_command() {
