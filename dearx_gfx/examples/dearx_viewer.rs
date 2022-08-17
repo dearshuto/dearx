@@ -17,9 +17,9 @@ fn run<TApi: IApi>() {
         let display = instance.try_get_display(id).unwrap();
         TDeviceBuilder::<TApi>::new()
             .enable_debug_assertion()
-            .build_with_surface(&display.window, instance.get_event_loop())
+            .build_with_surface(&display)
     };
-    let mut queue = TQueueBuilder::<TApi>::new().build(&device);
+    let mut queue = TQueueBuilder::<TApi>::new().build(&mut device);
     let mut swap_chain = TSwapChainBuilder::<TApi>::new()
         .with_width(1280)
         .with_height(960)
@@ -27,8 +27,8 @@ fn run<TApi: IApi>() {
     let mut command_buffer = TCommandBufferBuilder::<TApi>::new().build(&device);
     let mut semaphore = TSemaphoreBuilder::<TApi>::new().build(&device);
 
-    let mut scene = Scene::<TApi>::new(&device);
-    let mut renderer = Renderer::<TApi>::new(&device);
+    let mut scene = Scene::<TApi>::new(&mut device);
+    let mut renderer = Renderer::<TApi>::new(&mut device);
 
     while instance.try_update() {
         let display = instance.try_get_display(id).unwrap();
