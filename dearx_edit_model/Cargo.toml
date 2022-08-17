@@ -9,3 +9,4 @@ edition = "2021"
 uuid = { version = "1.0.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
 im = "*"
 dearx_macro = { path = "../dearx_macro" }
+dearx_workspace = { path = "../dearx_workspace" }

@@ -3,16 +3,11 @@
     windows_subsystem = "windows"
 )]
 
-use dearx_edit_model::DearxProject;
+use dearx_edit_model::{DearxProject, GameObject, GameObjectId};
 use dearx_editor::MainWindowViewModel;
 use dearx_workspace::{DocumentInfo, Workspace};
+use im::HashMap;
 use std::sync::{Arc, Mutex};
-use tauri::Manager;
-
-#[tauri::command]
-fn my_custom_command() {
-    println!("I was invoked from JS!");
-}
 
 #[tauri::command]
 fn on_value_changed(value: f64) {
@@ -21,46 +16,24 @@ fn on_value_changed(value: f64) {
 
 #[tokio::main]
 async fn main() {
-    let mut workspace = Workspace::new();
-    let id = workspace.add_document(&DocumentInfo {
-        content: Arc::new(DearxProject::new()),
-    });
-    workspace.update_current_project(&id.clone(), |x| x); // テストコード
+    let (workspace, id) = {
+        let mut workspace = Workspace::new();
+        let mut game_object_map = HashMap::new();
+        game_object_map.insert(GameObjectId::new(), GameObject::new());
 
-    // ワークスペースへの変更を監視するテストコード
-    workspace
-        .observe_project()
-        .lock()
-        .unwrap()
-        .subscribe(move |project| {
-            if let Some(document) = project.documents.get(&id) {
-                println!("Value: {}", document.content.value);
-            }
-        });
+        let content = DearxProject::new().with_game_object(Arc::new(game_object_map));
+        let id = workspace.add_document(&DocumentInfo { content });
+        (workspace, id)
+    };
 
     let workspace = Arc::new(Mutex::new(workspace));
-    let builder = tauri::Builder::default();
-    let main_window_view_model = MainWindowViewModel::new(workspace.clone());
-
-    builder
+    let main_window_view_model = MainWindowViewModel::new(&id, workspace.clone());
+    tauri::Builder::default()
         .setup(move |app| {
-            let app_handle = app.app_handle();
-            std::thread::spawn(move || loop {
-                app_handle
-                    .emit_all("back-to-front", "ping frontend".to_string())
-                    .unwrap();
-                std::thread::sleep(std::time::Duration::from_secs(1))
-            });
-            app.manage(id.clone());
-            app.manage(workspace);
-
             main_window_view_model.listen(app);
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            my_custom_command,
-            on_value_changed
-        ])
+        .invoke_handler(tauri::generate_handler![on_value_changed])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

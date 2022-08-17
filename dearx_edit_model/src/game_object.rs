@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use crate::components::{ComponentId, StaticMeshComponent, TransformComponent};
 
-#[derive(Immutable)]
+#[derive(Immutable, Clone)]
 pub struct GameObject {
     pub transform_components: Arc<HashMap<ComponentId, TransformComponent>>,
     pub static_mesh_components: Arc<HashMap<ComponentId, StaticMeshComponent>>,

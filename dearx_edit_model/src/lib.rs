@@ -1,7 +1,8 @@
 use dearx_macro::Immutable;
+use dearx_workspace::DocumentId;
 use im::HashMap;
-use uuid::Uuid;
 use std::sync::Arc;
+use uuid::Uuid;
 
 pub mod components;
 mod float3;
@@ -9,7 +10,7 @@ mod game_object;
 pub use float3::Float3;
 pub use game_object::GameObject;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 pub struct GameObjectId {
     #[allow(dead_code)]
     id: Uuid,
@@ -22,17 +23,18 @@ impl GameObjectId {
 }
 
 #[derive(Immutable)]
-pub struct DearxProject
-{
+pub struct DearxProject {
+    pub current_id: Option<DocumentId>,
     pub game_object: Arc<HashMap<GameObjectId, GameObject>>,
-    pub value:f64,
+    pub value: f64,
 }
 
 impl DearxProject {
     pub fn new() -> Self {
-        Self{
+        Self {
+            current_id: None,
             game_object: Default::default(),
-            value: 0.0
+            value: 0.0,
         }
     }
 }
