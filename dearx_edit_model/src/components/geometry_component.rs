@@ -1,4 +1,4 @@
-use sje_generator_macro::Immutable;
+use dearx_macro::Immutable;
 use std::sync::Arc;
 
 #[derive(Immutable)]

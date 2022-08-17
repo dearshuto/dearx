@@ -1,5 +1,5 @@
+use dearx_macro::Immutable;
 use im::HashMap;
-use sje_generator_macro::Immutable;
 use std::sync::Arc;
 
 use crate::components::{ComponentId, StaticMeshComponent, TransformComponent};
