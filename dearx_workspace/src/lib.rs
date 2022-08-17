@@ -11,7 +11,7 @@ pub use workspace::Workspace;
 mod tests {
     use std::sync::Arc;
 
-    #[derive(sje_generator_macro::Immutable, Default, Clone, Copy)]
+    #[derive(dearx_macro::Immutable, Default, Clone, Copy)]
     struct Float2 {
         #[allow(dead_code)]
         pub x: f32,
@@ -19,7 +19,7 @@ mod tests {
         pub y: f32,
     }
 
-    #[derive(sje_generator_macro::Immutable, Default)]
+    #[derive(dearx_macro::Immutable, Default)]
     struct TestData {
         #[allow(dead_code)]
         int_value: i32,
