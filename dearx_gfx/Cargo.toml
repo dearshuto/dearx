@@ -12,7 +12,7 @@ sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 nalgebra-glm = "0.3"
 
 [dev-dependencies]
-sjvi = { git = "https://github.com/dearshuto/vi-rs.git", branch = "develop" }
+sjvi = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 
 [build-dependencies]
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
