@@ -30,6 +30,7 @@ function on_value_changed() {
 
 // バックエンドからのメッセージのハンドリング
 window.__TAURI__.event.listen('back-to-front', event => {
-  console.log(`back-to-front ${event.payload} ${new Date()}`)
+  let input = document.getElementById('button');
+  input.textContent = `${new Date()}`;
 });
 
