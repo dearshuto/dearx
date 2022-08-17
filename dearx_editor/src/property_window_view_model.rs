@@ -3,6 +3,8 @@ use std::sync::{Arc, Mutex};
 use dearx_edit_model::DearxProject;
 use dearx_workspace::{DocumentId, Workspace};
 
+use tauri::Manager;
+
 pub struct PropertyWindowViewModel {}
 
 impl PropertyWindowViewModel {
@@ -21,5 +23,11 @@ impl PropertyWindowViewModel {
             });
 
         Self {}
+    }
+
+    pub fn listen(&self, app: &tauri::App) {
+        app.listen_global("input_x_changed", |event| {
+            println!("Property Changed: {:?}", event.payload());
+        });
     }
 }
