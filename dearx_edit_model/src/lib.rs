@@ -1,5 +1,5 @@
+use dearx_macro::Immutable;
 use im::HashMap;
-use sje_generator_macro::Immutable;
 use uuid::Uuid;
 use std::sync::Arc;
 

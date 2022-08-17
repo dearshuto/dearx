@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 uuid = { version = "1.0.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
 im = "*"
-sje_generator_macro = { git = "https://github.com/dearshuto/sj_editor_framework_rs.git" }
+dearx_macro = { path = "../dearx_macro" }
