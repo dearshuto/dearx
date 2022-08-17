@@ -32,5 +32,7 @@ impl MainWindowViewModel {
                 .unwrap();
             std::thread::sleep(std::time::Duration::from_secs(1))
         });
+
+        self.property_window_view_model.listen(app);
     }
 }

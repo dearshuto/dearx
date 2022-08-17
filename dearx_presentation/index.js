@@ -20,12 +20,9 @@ function func() {
 
 function on_value_changed() {
   let input = document.getElementById('input_x');
-  window.__TAURI__
-    .invoke("on_value_changed", { value: parseFloat(input.value) })
-    .then((response) => {
-    })
-    .catch((error) => {
-    })
+
+  //バックエンドにメッセージを投げる
+  window.__TAURI__.event.emit('input_x_changed', { value: parseFloat(input.value) });
 }
 
 // バックエンドからのメッセージのハンドリング

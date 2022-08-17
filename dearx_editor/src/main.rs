@@ -9,11 +9,6 @@ use dearx_workspace::{DocumentInfo, Workspace};
 use im::HashMap;
 use std::sync::{Arc, Mutex};
 
-#[tauri::command]
-fn on_value_changed(value: f64) {
-    println!("{}", value);
-}
-
 #[tokio::main]
 async fn main() {
     let (workspace, id) = {
@@ -33,7 +28,6 @@ async fn main() {
             main_window_view_model.listen(app);
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![on_value_changed])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
