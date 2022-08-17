@@ -25,7 +25,7 @@ dearx_macro = { path = "../dearx_macro" }
 dearx_edit_model = { path = "../dearx_edit_model" }
 dearx_workspace = { path = "../dearx_workspace" }
 tokio = "*"
-
+im = "*"
 
 [features]
 # by default Tauri runs in production mode
