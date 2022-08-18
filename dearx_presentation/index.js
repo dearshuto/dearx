@@ -25,6 +25,11 @@ function on_value_changed() {
   window.__TAURI__.event.emit('input_x_changed', { value: parseFloat(input.value) });
 }
 
+function on_selection_changed(id) {
+  //バックエンドにメッセージを投げる
+  window.__TAURI__.event.emit('selection_changed', { id: id });
+}
+
 // バックエンドからのメッセージのハンドリング
 window.__TAURI__.event.listen('back-to-front', event => {
   let input = document.getElementById('button');
