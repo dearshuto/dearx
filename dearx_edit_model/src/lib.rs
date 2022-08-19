@@ -24,17 +24,15 @@ impl GameObjectId {
 
 #[derive(Immutable)]
 pub struct DearxProject {
-    pub current_id: Option<DocumentId>,
     pub game_object: Arc<HashMap<GameObjectId, GameObject>>,
-    pub value: f64,
+    pub selections: Arc<im::Vector<DocumentId>>,
 }
 
 impl DearxProject {
     pub fn new() -> Self {
         Self {
-            current_id: None,
             game_object: Default::default(),
-            value: 0.0,
+            selections: Default::default(),
         }
     }
 }

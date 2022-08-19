@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use crate::{document::DocumentId, project::Project, Document, DocumentInfo};
+use crate::{document::DocumentId, Document, DocumentInfo, Project};
 
 pub struct Observable<T: Send + Sync> {
     funcs: Vec<Arc<dyn Fn(Arc<Project<T>>) + Send + Sync + 'static>>,
@@ -17,16 +17,18 @@ impl<T: Send + Sync + 'static> Observable<T> {
     }
 }
 
-pub struct Workspace<T: Send + Sync> {
+pub struct Workspace<T: Send + Sync, U: Default> {
     pub current_project: Arc<Project<T>>,
     observable: Arc<Mutex<Observable<T>>>,
+    pub mutable_instance: U,
 }
 
-impl<T: Sized + Send + Sync + 'static> Workspace<T> {
+impl<T: Sized + Send + Sync + 'static, U: Default> Workspace<T, U> {
     pub fn new() -> Self {
         Self {
             current_project: Arc::new(Project::new()),
             observable: Arc::new(Mutex::new(Observable { funcs: Vec::new() })),
+            mutable_instance: Default::default(),
         }
     }
 

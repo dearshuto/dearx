@@ -5,7 +5,8 @@ mod project;
 mod workspace;
 pub use document::{Document, DocumentId};
 pub use document_info::DocumentInfo;
-pub use workspace::Workspace;
+pub use project::Project;
+pub use workspace::{Observable, Workspace};
 
 #[cfg(test)]
 mod tests {

@@ -1,14 +1,16 @@
 use std::sync::{Arc, Mutex};
 
 use dearx_edit_model::DearxProject;
-use dearx_workspace::{DocumentId, Workspace};
+use dearx_workspace::Workspace;
 
 use tauri::Manager;
+
+use crate::ServiceProvider;
 
 pub struct ObjectTreeViewModel;
 
 impl ObjectTreeViewModel {
-    pub fn new(_id: &DocumentId, _workspace: Arc<Mutex<Workspace<DearxProject>>>) -> Self {
+    pub fn new(_workspace: Arc<Mutex<Workspace<DearxProject, ServiceProvider>>>) -> Self {
         Self {}
     }
 
