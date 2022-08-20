@@ -29,10 +29,3 @@ function on_selection_changed(id) {
   //バックエンドにメッセージを投げる
   window.__TAURI__.event.emit('selection_changed', { id: id });
 }
-
-// バックエンドからのメッセージのハンドリング
-window.__TAURI__.event.listen('back-to-front', event => {
-  let input = document.getElementById('button');
-  input.textContent = `${new Date()}`;
-});
-
