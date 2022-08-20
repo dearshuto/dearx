@@ -3,7 +3,7 @@ resolver = "2"
 members = [
     "dearx_app",
     "dearx_edit_model",
-    "dearx_editor",
+    "dearx_editor/src-tauri",
     "dearx_gfx",
     "dearx_serialization",
     "dearx_macro",
