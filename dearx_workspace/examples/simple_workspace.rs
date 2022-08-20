@@ -4,12 +4,6 @@ use std::{sync::Arc, time::Duration};
 
 use eframe::egui;
 
-// モデルデータ
-#[derive(Immutable)]
-struct TestData {
-    pub value: i32,
-}
-
 struct MyApp {
     workspace: Workspace<TestData>,
 }
