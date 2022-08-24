@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::DocumentInfo;
 
-#[derive(Eq, PartialEq, Hash, Clone, Copy)]
+#[derive(Eq, PartialEq, Hash, Clone, Copy, Debug)]
 pub struct DocumentId {
     id: Uuid,
 }
