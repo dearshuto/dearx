@@ -2,6 +2,10 @@ pub mod component;
 pub mod domain;
 mod renderer;
 mod scene;
+
+#[cfg(feature = "viewer")]
+pub mod viewer;
+
 pub use renderer::Renderer;
 pub use scene::{Scene, SceneUpdater};
 
