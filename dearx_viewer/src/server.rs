@@ -9,11 +9,9 @@ pub struct Server<TListener: IListener> {
     listener: Arc<Mutex<TListener>>,
 }
 
-impl<TListener: IListener + Sync + Send + 'static> Server<TListener> {
-    pub fn new(listener: TListener) -> Self {
-        Self {
-            listener: Arc::new(Mutex::new(listener)),
-        }
+impl<TListener: IListener + Send + Sync + 'static> Server<TListener> {
+    pub fn new(listener: Arc<Mutex<TListener>>) -> Self {
+        Self { listener }
     }
 
     pub async fn listen(self) -> Result<(), Box<dyn std::error::Error>> {

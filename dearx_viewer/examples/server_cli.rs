@@ -1,3 +1,5 @@
+use std::sync::{Arc, Mutex};
+
 use dearx_viewer::{IListener, Server};
 
 struct Listener {}
@@ -9,7 +11,7 @@ impl IListener for Listener {
 #[tokio::main]
 async fn main() {
     let listener = Listener {};
-    let server = Server::new(listener);
+    let server = Server::new(Arc::new(Mutex::new(listener)));
 
     println!("Listen...");
     server.listen().await.unwrap();
