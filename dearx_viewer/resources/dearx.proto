@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package dearx_grpc;
+
+// import
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+service Greeter {
+	rpc Request(ViewerRequest) returns (Reply);
+}
+
+message ViewerRequest
+{
+	string value = 1;
+	SubRequest sub_request = 2;
+}
+
+message SubRequest
+{
+	string sub = 1;
+}
+
+message Reply {
+	string message = 1;
+}
