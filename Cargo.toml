@@ -7,6 +7,5 @@ members = [
     "dearx_gfx",
     "dearx_serialization",
     "dearx_macro",
-    "dearx_viewer",
     "dearx_workspace",
 ]

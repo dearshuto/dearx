@@ -3,16 +3,24 @@ name = "dearx_gfx"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+default = ["viewer"]
+viewer = []
 
 [dependencies]
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 nalgebra-glm = "0.3"
+tonic = "0.8.3"
+prost = "*"
 
 [dev-dependencies]
 sjvi = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+tokio = { version = "1.25.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"]}
+wgpu = "0.15.1"
+winit = "*"
 
 [build-dependencies]
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+tonic-build = { version = "0.8.3", features = ["prost"] }

@@ -1,8 +1,8 @@
 use std::sync::{Arc, Mutex};
 
-use crate::proto::greeter_server::{Greeter, GreeterServer};
-use crate::proto::{Reply, ViewerRequest};
-use crate::IListener;
+use super::proto::greeter_server::{Greeter, GreeterServer};
+use super::proto::{Reply, ViewerRequest};
+use super::IListener;
 use tonic::{Request, Response, Status};
 
 pub struct Server<TListener: IListener> {
@@ -35,7 +35,7 @@ impl<TListener: IListener + Send + Sync + 'static> Greeter for Server<TListener>
             listener.on_value_changed()
         }
 
-        let reply = crate::proto::Reply {
+        let reply = Reply {
             message: format!("Hello {}!", request.into_inner().value),
         };
         Ok(Response::new(reply))

@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use dearx_viewer::{IListener, Server};
+use dearx_gfx::viewer::{IListener, Server};
 use winit::{
     dpi::PhysicalSize,
     event_loop::{ControlFlow, EventLoop},

@@ -1,4 +1,5 @@
-use crate::proto::greeter_client::GreeterClient;
+use crate::viewer::proto::greeter_client::GreeterClient;
+use crate::viewer::proto::ViewerRequest;
 
 pub struct Client;
 
@@ -7,10 +8,7 @@ impl Client {
         Self {}
     }
 
-    pub async fn send(
-        &self,
-        request: crate::proto::ViewerRequest,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn send(&self, request: ViewerRequest) -> Result<(), Box<dyn std::error::Error>> {
         let mut client = GreeterClient::connect("http://[::1]:50051").await?;
         let request = tonic::Request::new(request);
 

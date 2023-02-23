@@ -6,4 +6,9 @@ fn main() {
         &"resources/shaders/basic.vs",
         &"resources/shaders/basic.fs",
     );
+    // gRPC
+    tonic_build::configure()
+        .build_server(true)
+        .compile(&["proto/dearx.proto"], &Vec::<std::path::PathBuf>::new())
+        .unwrap();
 }
