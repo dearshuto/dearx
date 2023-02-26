@@ -4,7 +4,7 @@
 )]
 
 use dearx_edit_model::{DearxProject, GameObject, GameObjectId};
-use dearx_editor::{MainWindowViewModel, ServiceProvider};
+use dearx_tool_windows::{MainWindowViewModel, ServiceProvider};
 use dearx_workspace::{DocumentInfo, Workspace};
 use im::HashMap;
 use std::sync::{Arc, Mutex};
@@ -21,13 +21,13 @@ async fn main() {
         let id = workspace.add_document(&DocumentInfo { content });
         (workspace, id)
     };
-    workspace.mutable_instance.active_document_manager.active_id = Some(id);
+    // workspace.mutable_instance.active_document_manager.active_id = Some(id);
 
     let workspace = Arc::new(Mutex::new(workspace));
     let mut main_window_view_model = MainWindowViewModel::new(workspace.clone());
     tauri::Builder::default()
         .setup(move |app| {
-            main_window_view_model.listen(app);
+            // main_window_view_model.listen(app);
             Ok(())
         })
         .run(tauri::generate_context!())
