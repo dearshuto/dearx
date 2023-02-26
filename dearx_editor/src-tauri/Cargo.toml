@@ -23,6 +23,7 @@ tauri = { version = "1.0.5", features = ["api-all"] }
 dearx_macro = { path = "../../dearx_macro" }
 dearx_edit_model = { path = "../../dearx_edit_model" }
 dearx_workspace = { path = "../../dearx_workspace" }
+dearx_tool_windows = { path = "../../dearx_presentation/dearx_tool_windows" }
 tokio = "*"
 im = "*"
 

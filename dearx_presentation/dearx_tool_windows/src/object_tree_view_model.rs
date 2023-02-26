@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use dearx_edit_model::DearxProject;
 use dearx_workspace::Workspace;
 
-use tauri::Manager;
+// use tauri::Manager;
 
 use crate::ServiceProvider;
 
@@ -14,9 +14,9 @@ impl ObjectTreeViewModel {
         Self {}
     }
 
-    pub fn listen(&self, app: &tauri::App) {
-        app.listen_global("selection_changed", |event| {
-            println!("selection_changed: {:?}", event.payload());
-        });
-    }
+    // pub fn listen(&self, app: &tauri::App) {
+    //     app.listen_global("selection_changed", |event| {
+    //         println!("selection_changed: {:?}", event.payload());
+    //     });
+    // }
 }

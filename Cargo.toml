@@ -6,6 +6,8 @@ members = [
     "dearx_editor/src-tauri",
     "dearx_gfx",
     "dearx_serialization",
+    "dearx_presentation/sycamore",
+    "dearx_presentation/dearx_tool_windows",
     "dearx_macro",
     "dearx_workspace",
 ]
