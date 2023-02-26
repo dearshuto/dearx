@@ -1,5 +1,3 @@
-// フロントエンドを sycamore にする設定ファイル
-// cargo tauri dev --config path/to/tauri.conf.sycamore.json
 {
     "build": {
         "beforeBuildCommand": "trunk build --release",

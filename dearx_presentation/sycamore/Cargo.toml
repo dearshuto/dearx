@@ -13,3 +13,8 @@ wasm-bindgen = { version = "0.2.84", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.32"
 web-sys = "*"
 js-sys = "0.3.59" 
+
+# 画面描画
+wgpu = { version = "0.15.1", features = ["webgl"] }
+winit = "*"
+futures = "*"
