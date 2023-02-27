@@ -3,7 +3,6 @@ use serde_wasm_bindgen::to_value;
 use sycamore::prelude::*;
 use wasm_bindgen::prelude::*;
 use web_sys::HtmlCanvasElement;
-use winit::event_loop::EventLoop;
 
 #[wasm_bindgen]
 extern "C" {
