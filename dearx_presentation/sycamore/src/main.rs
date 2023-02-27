@@ -5,19 +5,7 @@ use wasm_bindgen::prelude::*;
 use web_sys::HtmlCanvasElement;
 use winit::event_loop::EventLoop;
 
-#[wasm_bindgen]
-extern "C" {
-    fn alert(message: &str);
-}
-
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
-}
+use sycamore_frontend::{js::*, tauri::*};
 
 #[derive(Serialize, Deserialize)]
 struct GreetArgs<'a> {
