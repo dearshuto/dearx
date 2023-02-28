@@ -1,16 +1,12 @@
 pub fn render(instance: &wgpu::Instance, surface: &wgpu::Surface) {
-    // let adapter = wgpu::ShaderSource::Glsl {
-    //     shader: Default::default(),
-    //     stage: wgpu::ShaderStages::VERTEX,
-    //     defines: Default::default(),
-    // };
-    futures::executor::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
-        power_preference: wgpu::PowerPreference::default(),
-        force_fallback_adapter: false,
-        // Request an adapter which can render to our surface
-        compatible_surface: Some(surface),
-    }))
-    .unwrap();
+    let adapter =
+        futures::executor::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
+            power_preference: wgpu::PowerPreference::default(),
+            force_fallback_adapter: false,
+            // Request an adapter which can render to our surface
+            compatible_surface: Some(surface),
+        }))
+        .unwrap();
 
     let (device, queue) = futures::executor::block_on(adapter.request_device(
         &wgpu::DeviceDescriptor {
