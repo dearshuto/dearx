@@ -8,12 +8,18 @@ default = ["viewer"]
 viewer = []
 
 [dependencies]
-sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 nalgebra-glm = "0.3"
-tonic = "0.8.3"
-prost = "*"
+wgpu = {version = "0.15.1", features = ["spirv", "webgl", "glsl"]}
+prost = { version = "*" }
+futures = {version = "*" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+usd-rs = { git = "https://github.com/dearshuto/usd-rs.git", branch = "develop" }
+tonic = { version = "0.8.3" }
+
 
 [dev-dependencies]
 sjvi = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
@@ -21,6 +27,6 @@ tokio = { version = "1.25.0", features = ["rt-multi-thread", "time", "fs", "macr
 wgpu = "0.15.1"
 winit = "*"
 
-[build-dependencies]
+[target.'cfg(not(target_arch = "wasm32"))'.build-dependencies]
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 tonic-build = { version = "0.8.3", features = ["prost"] }
