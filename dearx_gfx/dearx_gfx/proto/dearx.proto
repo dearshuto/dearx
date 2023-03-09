@@ -24,3 +24,21 @@ message SubRequest
 message Reply {
 	string message = 1;
 }
+
+message Response {
+    
+}
+
+message Color
+{
+    float red = 1;
+    float green = 2;
+    float blue = 3;
+    float alpha = 4;
+}
+
+message Mesh
+{
+    repeated float vertices = 1;
+    repeated int32 indices = 2;
+}

@@ -5,28 +5,44 @@ edition = "2021"
 
 [features]
 default = ["viewer"]
-viewer = []
+viewer = ["http-viewer"]
+http-viewer = []
 
 [dependencies]
 sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 nalgebra-glm = "0.3"
+naga = "0.11.0"
 wgpu = {version = "0.15.1", features = ["spirv", "webgl", "glsl"]}
-prost = { version = "*" }
+prost = { version = "0.11" }
 futures = {version = "*" }
+reqwest = { version = "0.11.14" }
+hyper = "*"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 usd-rs = { git = "https://github.com/dearshuto/usd-rs.git", branch = "develop" }
 tonic = { version = "0.8.3" }
+tokio = { version = "1.25.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"]}
+warp = "0.3.3"
+chrono = "*" # http::Server の試験実装用。将来的に消す
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+tonic = { version = "0.8.3", default-features = false }
 
 [dev-dependencies]
 sjvi = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-tokio = { version = "1.25.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"]}
 wgpu = "0.15.1"
 winit = "*"
+hyper = "*"
+serde_json = "*"
+prost = { version = "0.11" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+tokio = { version = "1.25.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"]}
 
 [target.'cfg(not(target_arch = "wasm32"))'.build-dependencies]
+tokio = { version = "1.25.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"]}
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 tonic-build = { version = "0.8.3", features = ["prost"] }
