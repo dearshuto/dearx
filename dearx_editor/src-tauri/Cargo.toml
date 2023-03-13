@@ -25,6 +25,7 @@ dearx_edit_model = { path = "../../dearx_edit_model" }
 dearx_workspace = { path = "../../dearx_workspace" }
 tokio = "*"
 im = "*"
+tauri-egui = { version = "*", git = "https://github.com/tauri-apps/tauri-egui.git"}
 
 [features]
 # by default Tauri runs in production mode

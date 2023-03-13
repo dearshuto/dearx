@@ -9,6 +9,8 @@ use dearx_workspace::{DocumentInfo, Workspace};
 use im::HashMap;
 use std::sync::{Arc, Mutex};
 
+use tauri_egui::{eframe, egui};
+
 #[tokio::main]
 async fn main() {
     let (mut workspace, id) = {
@@ -28,6 +30,7 @@ async fn main() {
     tauri::Builder::default()
         .setup(move |app| {
             main_window_view_model.listen(app);
+            // app.wry_plugin(tauri_egui::EguiPluginBuilder::new(app.handle()));
             Ok(())
         })
         .run(tauri::generate_context!())
