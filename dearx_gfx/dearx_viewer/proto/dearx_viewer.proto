@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package dearx_viewer;
+
+// import
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+message Color
+{
+    float red = 1;
+    float green = 2;
+    float blue = 3;
+    float alpha = 4;
+}
+
+message Mesh
+{
+    repeated float vertices = 1;
+    repeated int32 indices = 2;
+}
+
+message CreateRequest
+{
+    int32 id = 1;
+}
+
+message CreateReply
+{
+    int32 id = 1;
+}
+
+message DeleteRequest
+{
+    int32 id = 1;
+}
+
+message DeleteReply
+{
+    int32 id = 1;
+}
+
+message UpdateRequest
+{
+    int32 id = 1;
+}
+
+message UpdateReply
+{
+    int32 id = 1;
+}
