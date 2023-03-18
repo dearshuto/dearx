@@ -9,9 +9,6 @@ mod renderer;
 #[cfg(not(target_arch = "wasm32"))]
 mod scene;
 
-#[cfg(feature = "viewer")]
-pub mod viewer;
-
 #[cfg(not(target_arch = "wasm32"))]
 pub use renderer::Renderer;
 #[cfg(not(target_arch = "wasm32"))]

@@ -17,7 +17,7 @@ pub struct GeometryContainer<TApi: IApi> {
 impl<TApi: IApi> GeometryContainer<TApi> {
     pub fn new(device: &mut TApi::Device) -> Self {
         let obj_data =
-            sjgfx_util::load_obj(device, include_str!("../../../resources/models/cube.obj"));
+            sjgfx_util::load_obj(device, include_str!("../../resources/models/cube.obj"));
         let constant_buffer = TBufferBuilder::<TApi>::new()
             .enable_constant_buffer()
             .with_size(std::mem::size_of::<ViewData>())
