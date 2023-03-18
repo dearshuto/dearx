@@ -20,6 +20,16 @@ message Mesh
     repeated int32 indices = 2;
 }
 
+message GetSceneInfoRequest
+{
+    bool is_mesh_count_required = 1;
+}
+
+message GetSceneInfoReply
+{
+    int32 mesh_count = 1;
+}
+
 message CreateRequest
 {
     int32 id = 1;

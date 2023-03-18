@@ -53,7 +53,10 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
         let mesh = warp::path!("mesh")
             .and(warp::get())
             .and_then(Self::get_mesh_impl);
-        color.or(mesh)
+        let scene_info = warp::path!("scene_info")
+            .and(warp::get())
+            .and_then(Self::get_scene_info);
+        color.or(mesh).or(scene_info)
     }
 
     fn create(
@@ -90,6 +93,15 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
         logic: Arc<Mutex<T>>,
     ) -> impl Filter<Extract = (Arc<Mutex<T>>,), Error = std::convert::Infallible> + Clone {
         warp::any().map(move || logic.clone())
+    }
+
+    async fn get_scene_info() -> Result<impl Reply, warp::Rejection> {
+        println!("get resources");
+        let mut buffer = Vec::new();
+        let reply = crate::proto::GetSceneInfoReply { mesh_count: 0 };
+
+        reply.encode(&mut buffer).unwrap();
+        Ok(BinaryRequest::new(buffer))
     }
 
     async fn create_impl(
