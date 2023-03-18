@@ -6,14 +6,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dearx_gfx = { path = "../../dearx_gfx/dearx_gfx" }
+dearx_gfx = { path = "../../../crates/dearx_gfx/dearx_gfx" }
 serde-wasm-bindgen = "0.4.3"
 serde = { version = "1.0.140", features = ["derive"] }
 sycamore = "0.8"
 wasm-bindgen = { version = "0.2.84", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.32"
 web-sys = "*"
-js-sys = "0.3.59" 
+js-sys = "0.3.59"
 
 # 画面描画
 wgpu = { version = "0.15.1", features = ["webgl"] }

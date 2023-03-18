@@ -9,5 +9,5 @@ edition = "2021"
 sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 sjvi = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-dearx_gfx = { path = "../dearx_gfx/dearx_gfx" }
+dearx_gfx = { path = "../crates/dearx_gfx/dearx_gfx" }
 nalgebra-glm = "0.3"

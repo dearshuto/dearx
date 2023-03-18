@@ -8,5 +8,5 @@ edition = "2021"
 [dependencies]
 uuid = { version = "1.0.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
 im = "*"
-dearx_macro = { path = "../dearx_macro" }
-dearx_workspace = { path = "../dearx_workspace" }
+dearx_macro = { path = "../../crates/dearx_macro" }
+dearx_workspace = { path = "../../crates/dearx_workspace" }

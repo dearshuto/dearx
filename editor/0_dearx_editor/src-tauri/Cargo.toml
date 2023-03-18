@@ -20,10 +20,10 @@ serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.0.5", features = ["api-all"] }
 
 # form dearx
-dearx_macro = { path = "../../dearx_macro" }
-dearx_edit_model = { path = "../../dearx_edit_model" }
-dearx_workspace = { path = "../../dearx_workspace" }
-dearx_tool_windows = { path = "../../dearx_presentation/dearx_tool_windows" }
+dearx_tool_windows = { path = "../../1_dearx_presentation/dearx_tool_windows" }
+dearx_edit_model = { path = "../../2_dearx_edit_model" }
+dearx_workspace = { path = "../../../crates/dearx_workspace" }
+dearx_macro = { path = "../../../crates/dearx_macro" }
 tokio = "*"
 im = "*"
 
