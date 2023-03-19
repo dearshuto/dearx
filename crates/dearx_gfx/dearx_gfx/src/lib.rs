@@ -1,6 +1,6 @@
 pub mod domain;
 
-// pub mod experimental;
+pub mod experimental;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod component;
