@@ -15,7 +15,7 @@ pub struct MainWindowViewModel {
 }
 
 impl MainWindowViewModel {
-    pub fn new(workspace: Arc<Mutex<Workspace<DearxProject, ServiceProvider>>>) -> Self {
+    pub fn new(workspace: Arc<Mutex<Workspace<DearxProject>>>) -> Self {
         let property_window_view_model = PropertyWindowViewModel::new(workspace.clone());
         let object_tree_view_model = ObjectTreeViewModel::new(workspace.clone());
 

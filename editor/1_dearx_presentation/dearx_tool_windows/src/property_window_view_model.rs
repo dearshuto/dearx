@@ -1,22 +1,22 @@
 use std::sync::{Arc, Mutex};
 
 use dearx_edit_model::DearxProject;
-use dearx_workspace::{Observable, Workspace};
+use dearx_workspace::Workspace;
 
 use crate::ServiceProvider;
 // use serde_json::Value;
 // use tauri::Manager;
 
 pub struct PropertyWindowViewModel {
-    workspace: Arc<Mutex<Workspace<DearxProject, ServiceProvider>>>,
-    subscription: Option<Arc<Mutex<Observable<DearxProject>>>>,
+    workspace: Arc<Mutex<Workspace<DearxProject>>>,
 }
 
 impl PropertyWindowViewModel {
-    pub fn new(workspace: Arc<Mutex<Workspace<DearxProject, ServiceProvider>>>) -> Self {
+    pub fn new(workspace: Arc<Mutex<Workspace<DearxProject>>>) -> Self {
+        workspace.lock().unwrap().observe(|_| {});
         Self {
             workspace,
-            subscription: None,
+            // subscription: None,
         }
     }
 
