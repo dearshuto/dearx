@@ -9,5 +9,6 @@ members = [
     "editor/0_dearx_editor/src-tauri",
     "editor/1_dearx_presentation/sycamore",
     "editor/1_dearx_presentation/dearx_tool_windows",
-    "editor/2_dearx_edit_model",
+    "editor/2_dearx_application",
+    "editor/3_dearx_edit_model",
 ]

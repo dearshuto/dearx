@@ -4,6 +4,11 @@ use std::{sync::Arc, time::Duration};
 
 use eframe::egui;
 
+#[derive(Immutable)]
+struct TestData {
+    value: i32,
+}
+
 struct MyApp {
     workspace: Workspace<TestData>,
 }
@@ -16,10 +21,9 @@ impl Default for MyApp {
             content: edit_model,
         };
         let _id = workspace.add_document(&document_info);
-
-        workspace.observe_project().lock().unwrap().subscribe(|_| {
+        let _id = workspace.observe(|_| {
             std::thread::sleep(Duration::from_secs(1));
-            println!("Notify");
+            println!("AA");
         });
 
         Self { workspace }
@@ -58,5 +62,6 @@ async fn main() {
         "My egui App",
         options,
         Box::new(|_cc| Box::new(MyApp::default())),
-    );
+    )
+    .unwrap();
 }

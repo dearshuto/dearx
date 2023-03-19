@@ -1,40 +1,30 @@
 use std::sync::{Arc, Mutex};
 
+use uuid::Uuid;
+
 use crate::{document::DocumentId, Document, DocumentInfo, Project};
 
-pub struct Observable<T: Send + Sync> {
-    funcs: Vec<Arc<dyn Fn(Arc<Project<T>>) + Send + Sync + 'static>>,
-}
-impl<T: Send + Sync + 'static> Observable<T> {
-    pub fn subscribe<TFunc: Fn(Arc<Project<T>>) + 'static + Send + Sync>(&mut self, func: TFunc) {
-        self.funcs.push(Arc::new(func));
-    }
-
-    pub(crate) fn on_next(&self, content: Arc<Project<T>>) {
-        for func in &self.funcs {
-            func(content.clone());
-        }
-    }
-}
-
-pub struct Workspace<T: Send + Sync, U: Default> {
+pub struct Workspace<T: Sync + Send + 'static> {
     pub current_project: Arc<Project<T>>,
-    observable: Arc<Mutex<Observable<T>>>,
-    pub mutable_instance: U,
+    handlers: Arc<Mutex<Vec<Box<dyn FnMut(&Arc<Project<T>>) + Send>>>>,
 }
 
-impl<T: Sized + Send + Sync + 'static, U: Default> Workspace<T, U> {
+impl<T: Sync + Send + 'static> Workspace<T> {
     pub fn new() -> Self {
-        Self {
-            current_project: Arc::new(Project::new()),
-            observable: Arc::new(Mutex::new(Observable { funcs: Vec::new() })),
-            mutable_instance: Default::default(),
-        }
+        Default::default()
     }
 
-    pub fn observe_project(&mut self) -> Arc<Mutex<Observable<T>>> {
-        self.observable.clone()
+    pub fn observe<F>(&mut self, handler: F) -> Uuid
+    where
+        F: FnMut(&Arc<Project<T>>) + Send + 'static,
+    {
+        let mut handlers = self.handlers.lock().unwrap();
+        handlers.push(Box::new(handler));
+        let id = Uuid::new_v4();
+        id
     }
+
+    pub fn dispose_opservation(&mut self, _id: Uuid) {}
 
     pub fn add_document(&mut self, document_info: &DocumentInfo<T>) -> DocumentId {
         let new_document = Document::from(document_info);
@@ -45,11 +35,6 @@ impl<T: Sized + Send + Sync + 'static, U: Default> Workspace<T, U> {
             .update(id, Arc::new(new_document));
         let new_project = self.current_project.with_documents(new_documents);
         self.current_project = new_project;
-
-        self.observable
-            .lock()
-            .unwrap()
-            .on_next(self.current_project.clone());
         id
     }
 
@@ -68,14 +53,24 @@ impl<T: Sized + Send + Sync + 'static, U: Default> Workspace<T, U> {
                 .update(id.clone(), new_document);
             self.current_project = self.current_project.with_documents(new_documts);
 
-            // 非同期に通知
+            // TODO: 非同期に通知
             let project = self.current_project.clone();
-            let observable = self.observable.clone();
+            let handlers_arc = self.handlers.clone();
             let _ = tokio::task::spawn(async move {
-                for func in &observable.lock().unwrap().funcs {
-                    func(project.clone());
+                let mut handlers = handlers_arc.lock().unwrap();
+                for hander in handlers.iter_mut() {
+                    hander(&project);
                 }
             });
+        }
+    }
+}
+
+impl<T: Sync + Send + 'static> Default for Workspace<T> {
+    fn default() -> Self {
+        Self {
+            current_project: Arc::new(Project::new()),
+            handlers: Default::default(),
         }
     }
 }
