@@ -12,7 +12,7 @@ use std::sync::{Arc, Mutex};
 #[tokio::main]
 async fn main() {
     let (mut workspace, id) = {
-        let mut workspace = Workspace::<DearxProject, ServiceProvider>::new();
+        let mut workspace = Workspace::<DearxProject>::new();
         let mut game_object_map = HashMap::new();
         game_object_map.insert(GameObjectId::new(), GameObject::new());
         game_object_map.insert(GameObjectId::new(), GameObject::new());
