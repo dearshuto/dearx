@@ -10,7 +10,7 @@ use crate::ServiceProvider;
 pub struct ObjectTreeViewModel;
 
 impl ObjectTreeViewModel {
-    pub fn new(_workspace: Arc<Mutex<Workspace<DearxProject, ServiceProvider>>>) -> Self {
+    pub fn new(_workspace: Arc<Mutex<Workspace<DearxProject>>>) -> Self {
         Self {}
     }
 
