@@ -15,6 +15,9 @@ async fn run() {
     app.add_document(&DocumentInfo {
         content: Default::default(),
     });
+    app.add_document(&DocumentInfo {
+        content: Default::default(),
+    });
 
     let app = Arc::new(Mutex::new(app));
     let app_for_server = app.clone();
@@ -51,15 +54,18 @@ impl SimpleGui {
 impl eframe::App for SimpleGui {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
+            ui.heading("My egui Application");
+
+            // ドキュメントの情報を表示
             let mut app = self.app.lock().unwrap();
             let project = app.clone_current_project();
-            let (id, document) = project.documents.iter().next().unwrap();
-            let mut color = document.content.color;
-            ui.heading("My egui Application");
-            if ui.color_edit_button_rgb(&mut color).changed() {
-                app.update_current_project(id, |content| content.with_color(color));
+            for (id, document) in &project.documents {
+                let mut color = document.content.color;
+                if ui.color_edit_button_rgb(&mut color).changed() {
+                    app.update_current_project(id, |content| content.with_color(color));
+                }
+                ui.label(format!("Hello {}, {}, {}", color[0], color[1], color[2]));
             }
-            ui.label(format!("Hello {}, {}, {}", color[0], color[1], color[2]));
         });
     }
 }
