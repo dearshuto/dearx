@@ -31,7 +31,6 @@ impl Client {
             .await
             .unwrap();
         let bytes = response.bytes().await.unwrap();
-        println!("{}: {:?}", bytes.len(), bytes);
         let color = Color::decode(bytes).unwrap();
         Ok(color)
     }
