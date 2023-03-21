@@ -22,7 +22,7 @@ message ShaderBinary
 message Mesh
 {
     repeated float vertices = 1;
-    repeated int32 indices = 2;
+    repeated uint32 indices = 2;
 }
 
 message GetMeshReply
