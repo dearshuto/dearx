@@ -14,10 +14,35 @@ message Color
     float alpha = 4;
 }
 
+message ShaderBinary
+{
+    bytes binary = 1;
+}
+
 message Mesh
 {
     repeated float vertices = 1;
     repeated int32 indices = 2;
+}
+
+message GetMeshReply
+{
+    Mesh mesh = 1;
+}
+
+message GetMeshRequest
+{
+    int32 id = 1;
+}
+
+message GetShaderReply
+{
+    ShaderBinary shader_binary = 1;
+}
+
+message GetShaderRequest
+{
+    int32 id = 1;
 }
 
 message GetSceneInfoRequest
@@ -28,6 +53,19 @@ message GetSceneInfoRequest
 message GetSceneInfoReply
 {
     int32 mesh_count = 1;
+}
+
+message GetRequest
+{
+    GetSceneInfoRequest scene_info_request = 1;
+    GetMeshRequest mesh_request = 2;
+}
+
+message GetReply
+{
+    GetSceneInfoReply scene_info_reply = 1;
+    GetMeshReply mesh_reply = 2;
+    GetShaderReply shader_reply = 3;
 }
 
 message CreateRequest
