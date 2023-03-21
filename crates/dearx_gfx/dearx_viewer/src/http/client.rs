@@ -12,15 +12,16 @@ impl Client {
     }
 
     pub async fn fetch_shader(&mut self) -> Result<ShaderBinary, ()> {
-        let _response = self
+        let response = self
             .client
-            .get("http://localhost:3000/hello")
+            .get("http://localhost:3000/shader")
             .send()
             .await
             .unwrap();
-        Ok(ShaderBinary {
-            binary: Default::default(),
-        })
+        let bytes = response.bytes().await.unwrap();
+        println!("{}", bytes.len());
+        let shader = ShaderBinary::decode(bytes).unwrap();
+        Ok(shader)
     }
 
     pub async fn fetch_color(&mut self) -> Result<Color, ()> {

@@ -24,6 +24,10 @@ async fn run() {
     let app_for_loop = app.clone();
     let mut client = Client::default();
 
+    let mesh = client.fetch_mesh().await.unwrap();
+    println!("{:?}", mesh.vertices);
+    println!("{:?}", mesh.indices);
+
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
         .with_inner_size(PhysicalSize::new(640, 480))
@@ -71,6 +75,47 @@ async fn run() {
     };
 
     surface.configure(&device, &config);
+
+    let shader = client.fetch_shader().await.unwrap();
+    println!("Vertex Shader size: {}", shader.vertex_shader_binary.len());
+    println!("Pixel Shader size: {}", shader.pixel_shader_binary.len());
+    println!(
+        "Compute Shader size: {}",
+        shader.compute_shader_binary.len()
+    );
+    let vertex_shader_module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+        label: None,
+        source: wgpu::util::make_spirv(&shader.vertex_shader_binary),
+    });
+    let pixel_shader_module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+        label: None,
+        source: wgpu::util::make_spirv(&shader.pixel_shader_binary),
+    });
+
+    let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+        label: None,
+        bind_group_layouts: &[],
+        push_constant_ranges: &[],
+    });
+
+    let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+        label: None,
+        layout: Some(&pipeline_layout),
+        vertex: wgpu::VertexState {
+            module: &vertex_shader_module,
+            entry_point: "main",
+            buffers: &[],
+        },
+        fragment: Some(wgpu::FragmentState {
+            module: &pixel_shader_module,
+            entry_point: "main",
+            targets: &[Some(swapchain_format.into())],
+        }),
+        primitive: wgpu::PrimitiveState::default(),
+        depth_stencil: None,
+        multisample: wgpu::MultisampleState::default(),
+        multiview: None,
+    });
     // 描画用オブジェクトここまで
 
     // サーバーからの情報を取得
@@ -108,7 +153,7 @@ async fn run() {
                 let mut encoder =
                     device.create_command_encoder(&wgpu::CommandEncoderDescriptor { label: None });
                 {
-                    let _rpass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                    let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                         label: None,
                         color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                             view: &view,
@@ -125,6 +170,9 @@ async fn run() {
                         })],
                         depth_stencil_attachment: None,
                     });
+
+                    render_pass.set_pipeline(&render_pipeline);
+                    render_pass.draw(0..3, 0..1);
                 }
 
                 queue.submit(Some(encoder.finish()));

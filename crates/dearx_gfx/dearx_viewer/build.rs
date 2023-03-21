@@ -14,6 +14,10 @@ fn main() {
             "dearx_viewer.GetSceneInfoRequest",
             "#[derive(serde::Deserialize, serde::Serialize)]",
         )
+        .type_attribute(
+            "dearx_viewer.GetShaderRequest",
+            "#[derive(serde::Deserialize, serde::Serialize)]",
+        )
         .compile(
             &["proto/dearx_viewer.proto"],
             &Vec::<std::path::PathBuf>::new(),

@@ -16,7 +16,10 @@ message Color
 
 message ShaderBinary
 {
-    bytes binary = 1;
+    bytes vertex_shader_binary = 1;
+    bytes pixel_shader_binary = 2;
+    bytes compute_shader_binary = 3;
+
 }
 
 message Mesh
@@ -32,7 +35,6 @@ message GetMeshReply
 
 message GetMeshRequest
 {
-    int32 id = 1;
 }
 
 message GetShaderReply
@@ -42,7 +44,6 @@ message GetShaderReply
 
 message GetShaderRequest
 {
-    int32 id = 1;
 }
 
 message GetSceneInfoRequest
@@ -64,6 +65,7 @@ message GetRequest
 {
     GetSceneInfoRequest scene_info_request = 1;
     GetMeshRequest mesh_request = 2;
+    GetShaderRequest shader_request = 3;
 }
 
 message GetReply
