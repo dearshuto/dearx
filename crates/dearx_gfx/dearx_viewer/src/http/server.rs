@@ -43,15 +43,18 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
     pub fn api(
         logic: Arc<Mutex<T>>,
     ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
-        Self::get()
+        Self::get(logic.clone())
             .or(Self::create(logic.clone()))
             .or(Self::delete(logic.clone()))
             .or(Self::update(logic))
     }
 
-    fn get() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
+    fn get(
+        logic: Arc<Mutex<T>>,
+    ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
         let color = warp::path("color")
             .and(warp::query::<GetRequest>())
+            .and(Self::with_logic(logic))
             .and_then(Self::get_color_impl);
         let mesh = warp::path("mesh")
             .and(warp::query::<GetMeshRequest>())
@@ -102,7 +105,10 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
     async fn get_scene_info(_: GetSceneInfoRequest) -> Result<impl Reply, warp::Rejection> {
         println!("get resources");
         let mut buffer = Vec::new();
-        let reply = crate::proto::GetSceneInfoReply { mesh_count: 0 };
+        let reply = crate::proto::GetSceneInfoReply {
+            mesh_count: 0,
+            ..Default::default()
+        };
 
         reply.encode(&mut buffer).unwrap();
         Ok(BinaryRequest::new(buffer))
@@ -135,16 +141,29 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
         Ok(StatusCode::NO_CONTENT)
     }
 
-    async fn get_color_impl(_request: GetRequest) -> Result<impl Reply, warp::Rejection> {
-        println!("get color");
-        let mut buffer = Vec::new();
+    async fn get_color_impl(
+        request: GetRequest,
+        logic: Arc<Mutex<T>>,
+    ) -> Result<impl Reply, warp::Rejection> {
+        let mut logic = logic.lock().unwrap();
+        let reply = logic.get(&request);
 
-        let now = chrono::Utc::now();
-        let (red, green, blue) = if now.time().second() % 2 == 0 {
-            (1.0, 0.0, 0.0)
+        // デバッグ目的で常にカラーを返したいので、なにかしらの値を返しておく
+        // ロジックがリクエストを返したらそちらを採用
+        let (red, green, blue) = if let Some(scene_info) = reply.scene_info_reply {
+            let red = scene_info.red;
+            let green = scene_info.green;
+            let blue = scene_info.blue;
+            (red, green, blue)
         } else {
-            (0.0, 0.0, 1.0)
+            let now = chrono::Utc::now();
+            if now.time().second() % 2 == 0 {
+                (1.0, 0.0, 0.0)
+            } else {
+                (0.0, 0.0, 1.0)
+            }
         };
+
         let color = crate::proto::Color {
             red,
             green,
@@ -152,7 +171,10 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
             alpha: 0.0,
         };
 
+        // バイナリ化
+        let mut buffer = Vec::new();
         color.encode(&mut buffer).unwrap();
+
         Ok(BinaryRequest::new(buffer))
     }
 
