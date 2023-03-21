@@ -2,6 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use dearx_application::App;
 use dearx_viewer::http::Server;
+use dearx_workspace::DocumentInfo;
 use eframe::egui;
 
 #[tokio::main]
@@ -10,7 +11,12 @@ async fn main() {
 }
 
 async fn run() {
-    let app = Arc::new(Mutex::new(App::new()));
+    let mut app = App::new();
+    app.add_document(&DocumentInfo {
+        content: Default::default(),
+    });
+
+    let app = Arc::new(Mutex::new(app));
     let app_for_server = app.clone();
     let task = tokio::spawn(async move {
         let mut server = Server::new(app_for_server);
@@ -34,15 +40,11 @@ async fn run() {
 struct SimpleGui {
     #[allow(dead_code)]
     app: Arc<Mutex<App>>,
-    color: [f32; 3],
 }
 
 impl SimpleGui {
     pub fn new(app: Arc<Mutex<App>>) -> Self {
-        Self {
-            app,
-            color: [1.0, 1.0, 1.0],
-        }
+        Self { app }
     }
 }
 
@@ -50,15 +52,14 @@ impl eframe::App for SimpleGui {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             let mut app = self.app.lock().unwrap();
-            let mut color = app.color;
+            let project = app.clone_current_project();
+            let (id, document) = project.documents.iter().next().unwrap();
+            let mut color = document.content.color;
             ui.heading("My egui Application");
             if ui.color_edit_button_rgb(&mut color).changed() {
-                app.color = color;
+                app.update_current_project(id, |content| content.with_color(color));
             }
-            ui.label(format!(
-                "Hello {}, {}, {}",
-                self.color[0], self.color[1], self.color[2]
-            ));
+            ui.label(format!("Hello {}, {}, {}", color[0], color[1], color[2]));
         });
     }
 }
