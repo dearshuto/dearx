@@ -6,4 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+dearx_viewer = { path = "../../crates/dearx_gfx/dearx_viewer" }
 dearx_workspace = { path = "../../crates/dearx_workspace" }
+
+[dev-dependencies]
+tokio = { version = "1.0", features = ["full"] }
