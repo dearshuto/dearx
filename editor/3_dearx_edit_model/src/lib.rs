@@ -22,10 +22,13 @@ impl GameObjectId {
     }
 }
 
-#[derive(Immutable)]
+#[derive(Default, Immutable)]
 pub struct DearxProject {
     pub game_object: Arc<HashMap<GameObjectId, GameObject>>,
     pub selections: Arc<im::Vector<DocumentId>>,
+
+    // 動作確認用のデータ。将来的に消す。
+    pub color: [f32; 3],
 }
 
 impl DearxProject {
@@ -33,6 +36,7 @@ impl DearxProject {
         Self {
             game_object: Default::default(),
             selections: Default::default(),
+            color: Default::default(),
         }
     }
 }
