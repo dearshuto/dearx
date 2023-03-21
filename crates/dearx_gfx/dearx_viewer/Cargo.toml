@@ -11,6 +11,7 @@ chrono = "*" # http::Server の試験実装用。将来的に消す
 prost = { version = "0.11" }
 hyper = "*"
 bytes = "1.0"
+serde = { version = "1.0.158", features = ["derive"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tonic = { version = "0.8.3" }

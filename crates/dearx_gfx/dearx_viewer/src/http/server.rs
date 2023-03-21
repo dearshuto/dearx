@@ -12,10 +12,13 @@ use warp::Reply;
 
 use crate::http::server_reply::BinaryRequest;
 use crate::proto::{
-    CreateReply, CreateRequest, DeleteReply, DeleteRequest, UpdateReply, UpdateRequest,
+    CreateReply, CreateRequest, DeleteReply, DeleteRequest, GetMeshRequest, GetReply, GetRequest,
+    GetSceneInfoRequest, UpdateReply, UpdateRequest,
 };
 
 pub trait IServerLogic {
+    fn get(&mut self, request: &GetRequest) -> GetReply;
+
     fn create(&mut self, request: &CreateRequest) -> CreateReply;
 
     fn delete(&mut self, request: &DeleteRequest) -> DeleteReply;
@@ -47,15 +50,16 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
     }
 
     fn get() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
-        let color = warp::path!("color")
-            .and(warp::get())
+        let color = warp::path("color")
+            .and(warp::query::<GetRequest>())
             .and_then(Self::get_color_impl);
-        let mesh = warp::path!("mesh")
-            .and(warp::get())
+        let mesh = warp::path("mesh")
+            .and(warp::query::<GetMeshRequest>())
             .and_then(Self::get_mesh_impl);
-        let scene_info = warp::path!("scene_info")
-            .and(warp::get())
+        let scene_info = warp::path("scene_info")
+            .and(warp::query::<GetSceneInfoRequest>())
             .and_then(Self::get_scene_info);
+
         color.or(mesh).or(scene_info)
     }
 
@@ -95,7 +99,7 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
         warp::any().map(move || logic.clone())
     }
 
-    async fn get_scene_info() -> Result<impl Reply, warp::Rejection> {
+    async fn get_scene_info(_: GetSceneInfoRequest) -> Result<impl Reply, warp::Rejection> {
         println!("get resources");
         let mut buffer = Vec::new();
         let reply = crate::proto::GetSceneInfoReply { mesh_count: 0 };
@@ -131,8 +135,8 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
         Ok(StatusCode::NO_CONTENT)
     }
 
-    async fn get_color_impl() -> Result<impl Reply, warp::Rejection> {
-        println!("get resources");
+    async fn get_color_impl(_request: GetRequest) -> Result<impl Reply, warp::Rejection> {
+        println!("get color");
         let mut buffer = Vec::new();
 
         let now = chrono::Utc::now();
@@ -152,7 +156,7 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
         Ok(BinaryRequest::new(buffer))
     }
 
-    async fn get_mesh_impl() -> Result<impl Reply, warp::Rejection> {
+    async fn get_mesh_impl(_: GetMeshRequest) -> Result<impl Reply, warp::Rejection> {
         println!("get resources");
         let mut buffer = Vec::new();
 
@@ -173,6 +177,10 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
 // ロジックなしサーバー。将来的に消すかも
 pub struct Empty;
 impl IServerLogic for Empty {
+    fn get(&mut self, _request: &GetRequest) -> GetReply {
+        Default::default()
+    }
+
     fn create(&mut self, _request: &CreateRequest) -> CreateReply {
         Default::default()
     }
