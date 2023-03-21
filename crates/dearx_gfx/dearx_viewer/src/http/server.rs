@@ -39,14 +39,14 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
 
     pub fn api(
         logic: Arc<Mutex<T>>,
-    ) -> impl Filter<Extract = impl Reply, Error = warp::Rejection> + Clone {
+    ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
         Self::get()
             .or(Self::create(logic.clone()))
             .or(Self::delete(logic.clone()))
-            .or(Self::update(logic.clone()))
+            .or(Self::update(logic))
     }
 
-    fn get() -> impl Filter<Extract = impl Reply, Error = warp::Rejection> + Clone {
+    fn get() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
         let color = warp::path!("color")
             .and(warp::get())
             .and_then(Self::get_color_impl);
@@ -61,7 +61,7 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
 
     fn create(
         logic: Arc<Mutex<T>>,
-    ) -> impl Filter<Extract = impl Reply, Error = warp::Rejection> + Clone {
+    ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
         warp::path!("color")
             .and(warp::post())
             .and(warp::body::bytes())
@@ -71,7 +71,7 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
 
     fn update(
         logic: Arc<Mutex<T>>,
-    ) -> impl Filter<Extract = impl Reply, Error = warp::Rejection> + Clone {
+    ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
         warp::path!("color")
             .and(warp::put())
             .and(warp::body::bytes())
@@ -81,7 +81,7 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
 
     fn delete(
         logic: Arc<Mutex<T>>,
-    ) -> impl Filter<Extract = impl Reply, Error = warp::Rejection> + Clone {
+    ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
         warp::path!("color")
             .and(warp::delete())
             .and(warp::body::bytes())
