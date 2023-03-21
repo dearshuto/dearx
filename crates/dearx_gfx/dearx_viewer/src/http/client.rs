@@ -1,22 +1,26 @@
-use crate::proto::{Color, GetMeshRequest, GetRequest, Mesh};
+use crate::proto::{Color, GetMeshRequest, GetReply, GetRequest, Mesh, ShaderBinary};
 use prost::Message;
 use std::result::Result;
-
-pub struct Shader;
 
 pub struct Client {
     client: reqwest::Client,
 }
 
 impl Client {
-    pub async fn fetch_shader(&mut self) -> Result<Shader, ()> {
+    pub async fn fetch(&mut self, _request: &GetRequest) -> Result<GetReply, ()> {
+        Ok(Default::default())
+    }
+
+    pub async fn fetch_shader(&mut self) -> Result<ShaderBinary, ()> {
         let _response = self
             .client
-            .get("http://localhost:8080/hello")
+            .get("http://localhost:3000/hello")
             .send()
             .await
             .unwrap();
-        Ok(Shader)
+        Ok(ShaderBinary {
+            binary: Default::default(),
+        })
     }
 
     pub async fn fetch_color(&mut self) -> Result<Color, ()> {
