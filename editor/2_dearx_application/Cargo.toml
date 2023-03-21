@@ -6,8 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+uuid = { version = "1.3.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
 dearx_viewer = { path = "../../crates/dearx_gfx/dearx_viewer" }
 dearx_workspace = { path = "../../crates/dearx_workspace" }
+dearx_macro = { path = "../../crates/dearx_macro" }
 
 [dev-dependencies]
 tokio = { version = "1.0", features = ["full"] }

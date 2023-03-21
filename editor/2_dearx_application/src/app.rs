@@ -1,30 +1,48 @@
+use std::collections::HashMap;
 use std::sync::Arc;
 
+use dearx_macro::Immutable;
 use dearx_viewer::http::IServerLogic;
 use dearx_viewer::proto::{
     CreateReply, CreateRequest, DeleteReply, DeleteRequest, GetMeshReply, GetReply, GetRequest,
     GetSceneInfoReply, Mesh, UpdateReply, UpdateRequest,
 };
-use dearx_workspace::{DocumentInfo, Workspace};
+use dearx_workspace::{DocumentId, DocumentInfo, Project, Workspace};
+use uuid::Uuid;
 
-#[derive(Default)]
-pub struct DocumentData;
+#[derive(Default, Immutable)]
+pub struct DocumentData {
+    pub color: [f32; 3],
+}
 
 pub struct App {
     workspace: Workspace<DocumentData>,
-    pub color: [f32; 3],
+    id_table: HashMap<Uuid, DocumentId>,
 }
 
 impl App {
     pub fn new() -> Self {
         Self {
             workspace: Workspace::new(),
-            color: [1.0, 1.0, 1.0],
+            id_table: Default::default(),
         }
     }
 
     pub fn add_document(&mut self, document_info: &DocumentInfo<DocumentData>) {
-        self.workspace.add_document(document_info);
+        let id = self.workspace.add_document(document_info);
+        self.id_table.insert(Uuid::new_v4(), id);
+    }
+
+    pub fn update_current_project<TFunc: Fn(Arc<DocumentData>) -> Arc<DocumentData>>(
+        &mut self,
+        id: &DocumentId,
+        updater: TFunc,
+    ) {
+        self.workspace.update_current_project(id, updater);
+    }
+
+    pub fn clone_current_project(&self) -> Arc<Project<DocumentData>> {
+        self.workspace.current_project.clone()
     }
 
     fn get_mesh(&self, request: &GetRequest) -> Option<GetMeshReply> {
@@ -49,15 +67,26 @@ impl Default for App {
 
 impl IServerLogic for App {
     fn get(&mut self, request: &GetRequest) -> GetReply {
-        GetReply {
-            scene_info_reply: Some(GetSceneInfoReply {
-                red: self.color[0],
-                green: self.color[1],
-                blue: self.color[2],
-                ..Default::default()
-            }),
-            mesh_reply: self.get_mesh(request),
-            shader_reply: None,
+        // Workspace から情報を取得
+        // TODO: id 引きする
+        if let Some(document) = self.workspace.current_project.documents.values().next() {
+            let color = document.content.color;
+            GetReply {
+                scene_info_reply: Some(GetSceneInfoReply {
+                    red: color[0],
+                    green: color[1],
+                    blue: color[2],
+                    ..Default::default()
+                }),
+                mesh_reply: self.get_mesh(request),
+                shader_reply: None,
+            }
+        } else {
+            GetReply {
+                scene_info_reply: Some(Default::default()),
+                mesh_reply: self.get_mesh(request),
+                shader_reply: None,
+            }
         }
     }
 
