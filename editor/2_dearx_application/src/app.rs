@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use dearx_macro::Immutable;
+use dearx_edit_model::DearxProject;
 use dearx_viewer::http::IServerLogic;
 use dearx_viewer::proto::{
     CreateReply, CreateRequest, DeleteReply, DeleteRequest, GetMeshReply, GetReply, GetRequest,
@@ -10,13 +10,8 @@ use dearx_viewer::proto::{
 use dearx_workspace::{DocumentId, DocumentInfo, Project, Workspace};
 use uuid::Uuid;
 
-#[derive(Default, Immutable)]
-pub struct DocumentData {
-    pub color: [f32; 3],
-}
-
 pub struct App {
-    workspace: Workspace<DocumentData>,
+    workspace: Workspace<DearxProject>,
     id_table: HashMap<Uuid, DocumentId>,
 }
 
@@ -28,12 +23,12 @@ impl App {
         }
     }
 
-    pub fn add_document(&mut self, document_info: &DocumentInfo<DocumentData>) {
+    pub fn add_document(&mut self, document_info: &DocumentInfo<DearxProject>) {
         let id = self.workspace.add_document(document_info);
         self.id_table.insert(Uuid::new_v4(), id);
     }
 
-    pub fn update_current_project<TFunc: Fn(Arc<DocumentData>) -> Arc<DocumentData>>(
+    pub fn update_current_project<TFunc: Fn(Arc<DearxProject>) -> Arc<DearxProject>>(
         &mut self,
         id: &DocumentId,
         updater: TFunc,
@@ -41,7 +36,7 @@ impl App {
         self.workspace.update_current_project(id, updater);
     }
 
-    pub fn clone_current_project(&self) -> Arc<Project<DocumentData>> {
+    pub fn clone_current_project(&self) -> Arc<Project<DearxProject>> {
         self.workspace.current_project.clone()
     }
 
