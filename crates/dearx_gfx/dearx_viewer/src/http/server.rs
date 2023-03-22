@@ -10,21 +10,11 @@ use std::{
 use warp::Filter;
 use warp::Reply;
 
-use crate::http::server_reply::BinaryRequest;
 use crate::proto::{
     CreateReply, CreateRequest, DeleteReply, DeleteRequest, GetMeshRequest, GetReply, GetRequest,
     GetSceneInfoRequest, UpdateReply, UpdateRequest,
 };
-
-pub trait IServerLogic {
-    fn get(&mut self, request: &GetRequest) -> GetReply;
-
-    fn create(&mut self, request: &CreateRequest) -> CreateReply;
-
-    fn delete(&mut self, request: &DeleteRequest) -> DeleteReply;
-
-    fn update(&mut self, request: &UpdateRequest) -> UpdateReply;
-}
+use crate::{http::server_reply::BinaryRequest, IServerLogic};
 
 pub struct Server<T: Send + IServerLogic> {
     value: Arc<Mutex<T>>,

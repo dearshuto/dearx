@@ -9,4 +9,4 @@ pub use client::Client;
 
 // サーバーは Web では使えない
 #[cfg(not(target_arch = "wasm32"))]
-pub use server::{IServerLogic, Server};
+pub use server::Server;
