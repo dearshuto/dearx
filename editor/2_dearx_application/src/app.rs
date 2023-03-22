@@ -2,11 +2,11 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use dearx_edit_model::DearxProject;
-use dearx_viewer::http::IServerLogic;
 use dearx_viewer::proto::{
     CreateReply, CreateRequest, DeleteReply, DeleteRequest, GetMeshReply, GetReply, GetRequest,
     GetSceneInfoReply, Mesh, UpdateReply, UpdateRequest,
 };
+use dearx_viewer::IServerLogic;
 use dearx_workspace::{DocumentId, DocumentInfo, Project, Workspace};
 use uuid::Uuid;
 

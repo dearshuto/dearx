@@ -1,5 +1,8 @@
 pub mod http;
+mod i_server_logic;
 pub mod proto;
+
+pub use i_server_logic::IServerLogic;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
