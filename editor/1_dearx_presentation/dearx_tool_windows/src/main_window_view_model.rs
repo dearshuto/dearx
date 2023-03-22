@@ -4,7 +4,7 @@ use dearx_edit_model::DearxProject;
 use dearx_workspace::Workspace;
 // use tauri::Manager;
 
-use crate::{ObjectTreeViewModel, PropertyWindowViewModel, ServiceProvider};
+use crate::{ObjectTreeViewModel, PropertyWindowViewModel};
 
 pub struct MainWindowViewModel {
     #[allow(dead_code)]

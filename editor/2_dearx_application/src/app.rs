@@ -40,7 +40,7 @@ impl App {
         self.workspace.current_project.clone()
     }
 
-    fn get_mesh(&self, request: &GetRequest) -> Option<GetMeshReply> {
+    fn get_mesh(&self, _request: &GetRequest) -> Option<GetMeshReply> {
         Some(GetMeshReply {
             mesh: Some(Mesh {
                 vertices: vec![
