@@ -3,11 +3,11 @@ use std::sync::{Arc, Mutex};
 use dearx_edit_model::DearxProject;
 use dearx_workspace::Workspace;
 
-use crate::ServiceProvider;
 // use serde_json::Value;
 // use tauri::Manager;
 
 pub struct PropertyWindowViewModel {
+    #[allow(dead_code)]
     workspace: Arc<Mutex<Workspace<DearxProject>>>,
 }
 

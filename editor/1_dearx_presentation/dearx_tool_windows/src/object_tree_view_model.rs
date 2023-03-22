@@ -5,8 +5,6 @@ use dearx_workspace::Workspace;
 
 // use tauri::Manager;
 
-use crate::ServiceProvider;
-
 pub struct ObjectTreeViewModel;
 
 impl ObjectTreeViewModel {
