@@ -54,7 +54,7 @@ impl SimpleGui {
 impl eframe::App for SimpleGui {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("My egui Application");
+            ui.heading("My egui Application.");
 
             // ドキュメントの情報を表示
             let mut app = self.app.lock().unwrap();

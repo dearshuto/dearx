@@ -12,7 +12,7 @@ use warp::Reply;
 
 use crate::proto::{
     CreateReply, CreateRequest, DeleteReply, DeleteRequest, GetMeshRequest, GetReply, GetRequest,
-    GetSceneInfoRequest, UpdateReply, UpdateRequest,
+    GetSceneInfoRequest, GetShaderRequest, UpdateReply, UpdateRequest,
 };
 use crate::{http::server_reply::BinaryRequest, IServerLogic};
 
@@ -44,7 +44,7 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
     ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
         let color = warp::path("color")
             .and(warp::query::<GetRequest>())
-            .and(Self::with_logic(logic))
+            .and(Self::with_logic(logic.clone()))
             .and_then(Self::get_color_impl);
         let mesh = warp::path("mesh")
             .and(warp::query::<GetMeshRequest>())
@@ -52,8 +52,12 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
         let scene_info = warp::path("scene_info")
             .and(warp::query::<GetSceneInfoRequest>())
             .and_then(Self::get_scene_info);
+        let shader = warp::path("shader")
+            .and(warp::query::<GetShaderRequest>())
+            .and(Self::with_logic(logic))
+            .and_then(Self::get_shader_impl);
 
-        color.or(mesh).or(scene_info)
+        color.or(mesh).or(scene_info).or(shader)
     }
 
     fn create(
@@ -182,6 +186,35 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
         };
 
         mesh.encode(&mut buffer).unwrap();
+        Ok(BinaryRequest::new(buffer))
+    }
+
+    async fn get_shader_impl(
+        request: GetShaderRequest,
+        logic: Arc<Mutex<T>>,
+    ) -> Result<impl Reply, warp::Rejection> {
+        let mut logic = logic.lock().unwrap();
+        let reply = logic.get(&GetRequest {
+            scene_info_request: None,
+            mesh_request: None,
+            shader_request: Some(request),
+        });
+
+        let shader_binary = if let Some(shader_binary) = reply.shader_reply {
+            if let Some(binary) = shader_binary.shader_binary {
+                crate::proto::ShaderBinary {
+                    vertex_shader_binary: binary.vertex_shader_binary,
+                    pixel_shader_binary: binary.pixel_shader_binary,
+                    compute_shader_binary: binary.compute_shader_binary,
+                }
+            } else {
+                Default::default()
+            }
+        } else {
+            Default::default()
+        };
+        let mut buffer = Vec::new();
+        shader_binary.encode(&mut buffer).unwrap();
         Ok(BinaryRequest::new(buffer))
     }
 }
