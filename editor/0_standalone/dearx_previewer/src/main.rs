@@ -1,9 +1,11 @@
 use std::{
+    mem::size_of,
     sync::{Arc, Mutex},
     time::Duration,
 };
 
 use dearx_viewer::http::Client;
+use wgpu::{util::DeviceExt, VertexAttribute, VertexBufferLayout};
 use winit::{
     dpi::PhysicalSize,
     event::{Event, WindowEvent},
@@ -23,10 +25,6 @@ async fn run() {
     let app = Arc::new(Mutex::new(App::default()));
     let app_for_loop = app.clone();
     let mut client = Client::default();
-
-    let mesh = client.fetch_mesh().await.unwrap();
-    println!("{:?}", mesh.vertices);
-    println!("{:?}", mesh.indices);
 
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
@@ -76,6 +74,18 @@ async fn run() {
 
     surface.configure(&device, &config);
 
+    let mesh = client.fetch_mesh().await.unwrap();
+    let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+        label: None,
+        usage: wgpu::BufferUsages::VERTEX,
+        contents: bytemuck::cast_slice(&mesh.vertices),
+    });
+    let index_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+        label: None,
+        usage: wgpu::BufferUsages::INDEX,
+        contents: bytemuck::cast_slice(&mesh.indices),
+    });
+
     let shader = client.fetch_shader().await.unwrap();
     println!("Vertex Shader size: {}", shader.vertex_shader_binary.len());
     println!("Pixel Shader size: {}", shader.pixel_shader_binary.len());
@@ -104,7 +114,15 @@ async fn run() {
         vertex: wgpu::VertexState {
             module: &vertex_shader_module,
             entry_point: "main",
-            buffers: &[],
+            buffers: &[VertexBufferLayout {
+                array_stride: (size_of::<f32>() * 3) as u64, // XYZ
+                step_mode: wgpu::VertexStepMode::Vertex,
+                attributes: &[VertexAttribute {
+                    format: wgpu::VertexFormat::Float32x3,
+                    offset: 0,
+                    shader_location: 0,
+                }],
+            }],
         },
         fragment: Some(wgpu::FragmentState {
             module: &pixel_shader_module,
@@ -172,7 +190,13 @@ async fn run() {
                     });
 
                     render_pass.set_pipeline(&render_pipeline);
-                    render_pass.draw(0..3, 0..1);
+                    render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
+                    render_pass.set_index_buffer(index_buffer.slice(..), wgpu::IndexFormat::Uint32);
+                    render_pass.draw_indexed(
+                        0..3,
+                        0,    /*base vertex*/
+                        0..1, /*インスタンス*/
+                    );
                 }
 
                 queue.submit(Some(encoder.finish()));

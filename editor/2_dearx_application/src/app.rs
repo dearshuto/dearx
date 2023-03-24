@@ -29,8 +29,8 @@ impl App {
             project
                 .with_vertives(vec![
                     0.0, 0.0, 0.0, // v0
-                    1.0, 0.0, 0.0, // v1
-                    0.0, 1.0, 0.0, // v2
+                    0.5, 0.0, 0.0, // v1
+                    0.0, 0.5, 0.0, // v2
                 ])
                 .with_indices(vec![0, 1, 2])
         });
@@ -47,19 +47,6 @@ impl App {
 
     pub fn clone_current_project(&self) -> Arc<Project<DearxProject>> {
         self.workspace.current_project.clone()
-    }
-
-    fn get_mesh(&self, _request: &GetRequest) -> Option<GetMeshReply> {
-        Some(GetMeshReply {
-            mesh: Some(Mesh {
-                vertices: vec![
-                    0.0, 0.0, 0.0, // v0
-                    1.0, 0.0, 0.0, // v1
-                    0.0, 1.0, 0.0, // v2
-                ],
-                indices: vec![0, 1, 2],
-            }),
-        })
     }
 }
 
@@ -107,7 +94,7 @@ impl IServerLogic for App {
         } else {
             GetReply {
                 scene_info_reply: Some(Default::default()),
-                mesh_reply: self.get_mesh(request),
+                mesh_reply: None,
                 shader_reply: Some(GetShaderReply { shader_binary }),
             }
         }

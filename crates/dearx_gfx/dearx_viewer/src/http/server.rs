@@ -48,6 +48,7 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
             .and_then(Self::get_color_impl);
         let mesh = warp::path("mesh")
             .and(warp::query::<GetMeshRequest>())
+            .and(Self::with_logic(logic.clone()))
             .and_then(Self::get_mesh_impl);
         let scene_info = warp::path("scene_info")
             .and(warp::query::<GetSceneInfoRequest>())
@@ -172,19 +173,24 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
         Ok(BinaryRequest::new(buffer))
     }
 
-    async fn get_mesh_impl(_: GetMeshRequest) -> Result<impl Reply, warp::Rejection> {
-        println!("get resources");
-        let mut buffer = Vec::new();
+    async fn get_mesh_impl(
+        request: GetMeshRequest,
+        logic: Arc<Mutex<T>>,
+    ) -> Result<impl Reply, warp::Rejection> {
+        let mut logic = logic.lock().unwrap();
+        let reply = logic.get(&GetRequest {
+            mesh_request: Some(request),
+            ..Default::default()
+        });
 
-        let mesh = crate::proto::Mesh {
-            vertices: vec![
-                0.0, 0.0, 0.0, // v0
-                1.0, 0.0, 0.0, // v1
-                0.0, 1.0, 0.0, // v2
-            ],
-            indices: vec![0, 1, 2],
+        let Some(mesh_reply) = reply.mesh_reply else {
+            return Ok(BinaryRequest::new(Default::default()));
+        };
+        let Some(mesh) = mesh_reply.mesh else {
+            return Ok(BinaryRequest::new(Default::default()));
         };
 
+        let mut buffer = Vec::new();
         mesh.encode(&mut buffer).unwrap();
         Ok(BinaryRequest::new(buffer))
     }
