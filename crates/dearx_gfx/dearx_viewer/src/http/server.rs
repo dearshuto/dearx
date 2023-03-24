@@ -42,6 +42,10 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
     fn get(
         logic: Arc<Mutex<T>>,
     ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
+        let get = warp::get()
+            .and(warp::query::<GetRequest>())
+            .and(Self::with_logic(logic.clone()))
+            .and_then(Self::get_impl);
         let color = warp::path("color")
             .and(warp::query::<GetRequest>())
             .and(Self::with_logic(logic.clone()))
@@ -58,7 +62,7 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
             .and(Self::with_logic(logic))
             .and_then(Self::get_shader_impl);
 
-        color.or(mesh).or(scene_info).or(shader)
+        get.or(color).or(mesh).or(scene_info).or(shader)
     }
 
     fn create(
@@ -134,6 +138,20 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
         let request = UpdateRequest::decode(byte).unwrap();
         logic.lock().unwrap().update(&request);
         Ok(StatusCode::NO_CONTENT)
+    }
+
+    async fn get_impl(
+        request: GetRequest,
+        logic: Arc<Mutex<T>>,
+    ) -> Result<impl Reply, warp::Rejection> {
+        let mut logic = logic.lock().unwrap();
+        let reply = logic.get(&request);
+
+        // バイナリ化
+        let mut buffer = Vec::new();
+        reply.encode(&mut buffer).unwrap();
+
+        Ok(BinaryRequest::new(buffer))
     }
 
     async fn get_color_impl(

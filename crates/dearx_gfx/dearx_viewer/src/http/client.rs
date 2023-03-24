@@ -1,4 +1,5 @@
-use crate::proto::{Color, GetMeshRequest, GetReply, GetRequest, Mesh, ShaderBinary};
+use crate::proto::{Color, GetReply, GetRequest, Mesh, ShaderBinary};
+
 use prost::Message;
 use std::result::Result;
 
@@ -8,46 +9,57 @@ pub struct Client {
 
 impl Client {
     pub async fn fetch(&mut self, _request: &GetRequest) -> Result<GetReply, ()> {
-        Ok(Default::default())
+        let response = self
+            .client
+            .get("http://localhost:3000")
+            .send()
+            .await
+            .unwrap();
+        let bytes = response.bytes().await.unwrap();
+        if let Ok(reply) = GetReply::decode(bytes) {
+            Ok(reply)
+        } else {
+            Err(())
+        }
     }
 
     pub async fn fetch_shader(&mut self) -> Result<ShaderBinary, ()> {
-        let response = self
-            .client
-            .get("http://localhost:3000/shader")
-            .send()
-            .await
-            .unwrap();
-        let bytes = response.bytes().await.unwrap();
-        println!("{}", bytes.len());
-        let shader = ShaderBinary::decode(bytes).unwrap();
-        Ok(shader)
+        let Ok(response) = self.fetch(&Default::default()).await else {
+            return Err(());
+        };
+        let Some(shader_reply) = response.shader_reply else {
+            return Err(());
+        };
+        let Some(shader_binary) = shader_reply.shader_binary else {
+            return Err(());
+        };
+
+        Ok(shader_binary)
     }
 
     pub async fn fetch_color(&mut self) -> Result<Color, ()> {
-        let request = GetRequest {
-            ..Default::default()
+        let Ok(_response) = self.fetch(&Default::default()).await else {
+            return Err(());
         };
-        let response = self
-            .client
-            .get("http://localhost:3000/color")
-            .query(&request)
-            .send()
-            .await
-            .unwrap();
-        let bytes = response.bytes().await.unwrap();
-        let color = Color::decode(bytes).unwrap();
-        Ok(color)
+        Ok(Color {
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 0.0,
+        })
     }
 
     pub async fn fetch_mesh(&mut self) -> Result<Mesh, ()> {
-        let request = GetMeshRequest {
-            ..Default::default()
+        let Ok(response) = self.fetch(&Default::default()).await else {
+            return Err(());
         };
-        let url = "http://localhost:3000/mesh";
-        let response = self.client.get(url).query(&request).send().await.unwrap();
-        let bytes = response.bytes().await.unwrap();
-        let mesh = Mesh::decode(bytes).unwrap();
+        let Some(mesh_reply) = response.mesh_reply else {
+            return Err(());
+        };
+        let Some(mesh) = mesh_reply.mesh else {
+          return Err(());
+        };
+
         Ok(mesh)
     }
 }
