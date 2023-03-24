@@ -84,7 +84,7 @@ impl IServerLogic for App {
                     red: color[0],
                     green: color[1],
                     blue: color[2],
-                    ..Default::default()
+                    mesh_count: document.content.model_contents.len() as i32,
                 }),
                 mesh_reply: Some(GetMeshReply {
                     mesh: Some(Mesh { vertices, indices }),
