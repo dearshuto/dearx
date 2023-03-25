@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use dearx_edit_model::DearxProject;
+use dearx_edit_model::{DearxProject, Model, ModelContent};
 use dearx_viewer::proto::{
     CreateReply, CreateRequest, DeleteReply, DeleteRequest, GetMeshReply, GetReply, GetRequest,
     GetSceneInfoReply, GetShaderReply, Mesh, ShaderBinary, UpdateReply, UpdateRequest,
@@ -13,6 +13,8 @@ use uuid::Uuid;
 pub struct App {
     workspace: Workspace<DearxProject>,
     id_table: HashMap<Uuid, DocumentId>,
+
+    model_f32_u32_table: HashMap<String, Model<f32, u32>>,
 }
 
 impl App {
@@ -20,20 +22,65 @@ impl App {
         Self {
             workspace: Workspace::new(),
             id_table: Default::default(),
+            model_f32_u32_table: Default::default(),
         }
     }
 
     pub fn add_document(&mut self, document_info: &DocumentInfo<DearxProject>) {
         let id = self.workspace.add_document(document_info);
         self.workspace.update_current_project(&id, |project| {
-            project
-                .with_vertives(vec![
+            project.with_model_contents(Arc::new(vec![
+                ModelContent {
+                    name: "Trignale".to_string(),
+                },
+                ModelContent {
+                    name: "Cube".to_string(),
+                },
+            ]))
+        });
+
+        // モデルデータを追加
+        self.model_f32_u32_table.insert(
+            "Triangle".to_string(),
+            Model::<f32, u32> {
+                vertices: vec![
                     0.0, 0.0, 0.0, // v0
                     0.5, 0.0, 0.0, // v1
                     0.0, 0.5, 0.0, // v2
-                ])
-                .with_indices(vec![0, 1, 2])
-        });
+                ],
+                indices: vec![0, 1, 2],
+            },
+        );
+        self.model_f32_u32_table.insert(
+            "Cube".to_string(),
+            Model::<f32, u32> {
+                vertices: vec![
+                    1.0, 1.0, -1.0, // v0
+                    1.0, -1.0, -1.0, // v1
+                    1.0, 1.0, 1.0, // v2
+                    1.0, -1.0, -1.0, // v3
+                    -1.0, 1.0, -1.0, // v4
+                    -1.0, -1.0, 1.0, // v5
+                    -1.0, 1.0, 1.0, // v6
+                    -1.0, -1.0, 1.0, // v7
+                ],
+                indices: vec![
+                    4, 2, 0, //
+                    2, 7, 3, //
+                    6, 5, 7, //
+                    1, 7, 5, //
+                    0, 3, 1, //
+                    4, 1, 5, //
+                    4, 6, 2, //
+                    2, 6, 7, //
+                    6, 4, 5, //
+                    1, 3, 7, //
+                    0, 2, 3, //
+                    4, 0, 1, //
+                ],
+            },
+        );
+
         self.id_table.insert(Uuid::new_v4(), id);
     }
 
@@ -77,8 +124,21 @@ impl IServerLogic for App {
         // TODO: id 引きする
         if let Some(document) = self.workspace.current_project.documents.values().next() {
             let color = document.content.color;
-            let vertices = document.content.vertives.clone();
-            let indices = document.content.indices.clone();
+
+            let model_index = if request.mesh_request.is_some() {
+                let mesh_request = request.mesh_request.as_ref().unwrap();
+                mesh_request.index
+            } else {
+                0
+            };
+            let model = self
+                .model_f32_u32_table
+                .values()
+                .nth(model_index as usize)
+                .unwrap();
+
+            let vertices = &model.vertices;
+            let indices = &model.indices;
             GetReply {
                 scene_info_reply: Some(GetSceneInfoReply {
                     red: color[0],
@@ -87,7 +147,10 @@ impl IServerLogic for App {
                     mesh_count: document.content.model_contents.len() as i32,
                 }),
                 mesh_reply: Some(GetMeshReply {
-                    mesh: Some(Mesh { vertices, indices }),
+                    mesh: Some(Mesh {
+                        vertices: vertices.clone(),
+                        indices: indices.clone(),
+                    }),
                 }),
                 shader_reply: Some(GetShaderReply { shader_binary }),
             }

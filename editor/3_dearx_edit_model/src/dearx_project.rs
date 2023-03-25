@@ -13,8 +13,6 @@ pub struct DearxProject {
 
     // 動作確認用のデータ。将来的に消す。
     pub color: [f32; 3],
-    pub vertives: Vec<f32>,
-    pub indices: Vec<u32>,
 }
 
 impl DearxProject {
@@ -24,8 +22,6 @@ impl DearxProject {
             selections: Default::default(),
             model_contents: Default::default(),
             color: Default::default(),
-            vertives: Default::default(),
-            indices: Default::default(),
         }
     }
 }

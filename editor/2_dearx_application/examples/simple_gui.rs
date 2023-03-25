@@ -15,9 +15,6 @@ async fn run() {
     app.add_document(&DocumentInfo {
         content: Default::default(),
     });
-    app.add_document(&DocumentInfo {
-        content: Default::default(),
-    });
 
     let app = Arc::new(Mutex::new(app));
     let app_for_server = app.clone();
@@ -65,6 +62,11 @@ impl eframe::App for SimpleGui {
                     app.update_current_project(id, |content| content.with_color(color));
                 }
                 ui.label(format!("Hello {}, {}, {}", color[0], color[1], color[2]));
+
+                for index in 0..document.content.model_contents.len() {
+                    let model = &document.content.model_contents[index];
+                    ui.label(format!("{}: {}", index, model.name));
+                }
             }
         });
     }
