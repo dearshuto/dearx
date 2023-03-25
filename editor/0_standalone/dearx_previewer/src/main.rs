@@ -18,6 +18,7 @@ use winit::{
 #[derive(Default)]
 struct App {
     pub color: [f32; 3],
+    pub index_count: i32,
 }
 
 // 通信によって背景色を変える実装
@@ -85,6 +86,7 @@ async fn run() {
         usage: wgpu::BufferUsages::INDEX,
         contents: bytemuck::cast_slice(&mesh.indices),
     });
+    app.lock().unwrap().index_count = mesh.indices.len() as i32;
 
     let shader = client.fetch_shader().await.unwrap();
     println!("Vertex Shader size: {}", shader.vertex_shader_binary.len());
@@ -193,7 +195,7 @@ async fn run() {
                     render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
                     render_pass.set_index_buffer(index_buffer.slice(..), wgpu::IndexFormat::Uint32);
                     render_pass.draw_indexed(
-                        0..3,
+                        0..app.index_count as u32,
                         0,    /*base vertex*/
                         0..1, /*インスタンス*/
                     );
