@@ -41,7 +41,7 @@ impl Client {
     }
 
     pub async fn fetch_mesh(&mut self) -> Result<Mesh, ()> {
-        let request = GetMeshRequest { index: 1 };
+        let request = GetMeshRequest { index: 0 };
         let url = "http://localhost:3000/mesh";
         let response = self.client.get(url).query(&request).send().await.unwrap();
         let bytes = response.bytes().await.unwrap();
