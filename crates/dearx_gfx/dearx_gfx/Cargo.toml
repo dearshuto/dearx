@@ -23,7 +23,6 @@ sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develo
 sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 usd-rs = { git = "https://github.com/dearshuto/usd-rs.git", branch = "develop" }
 tonic = { version = "0.8.3" }
-tokio = { version = "1.25.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"]}
 warp = "0.3.3"
 chrono = "*" # http::Server の試験実装用。将来的に消す
 
@@ -39,10 +38,8 @@ serde_json = "*"
 prost = { version = "0.11" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
-tokio = { version = "1.25.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"]}
 
 [target.'cfg(not(target_arch = "wasm32"))'.build-dependencies]
-tokio = { version = "1.25.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"]}
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 tonic-build = { version = "0.8.3", features = ["prost"] }
