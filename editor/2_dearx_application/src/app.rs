@@ -3,8 +3,8 @@ use std::sync::Arc;
 
 use dearx_edit_model::{DearxProject, Model, ModelContent};
 use dearx_viewer::proto::{
-    CreateReply, CreateRequest, DeleteReply, DeleteRequest, GetMeshReply, GetReply, GetRequest,
-    GetSceneInfoReply, GetShaderReply, Mesh, ShaderBinary, UpdateReply, UpdateRequest,
+    Color, CreateReply, CreateRequest, DeleteReply, DeleteRequest, GetMeshReply, GetReply,
+    GetRequest, GetSceneInfoReply, GetShaderReply, Mesh, ShaderBinary, UpdateReply, UpdateRequest,
 };
 use dearx_viewer::IServerLogic;
 use dearx_workspace::{DocumentId, DocumentInfo, Project, Workspace};
@@ -141,9 +141,12 @@ impl IServerLogic for App {
             let indices = &model.indices;
             GetReply {
                 scene_info_reply: Some(GetSceneInfoReply {
-                    red: color[0],
-                    green: color[1],
-                    blue: color[2],
+                    background: Some(Color {
+                        red: color[0],
+                        green: color[1],
+                        blue: color[2],
+                        alpha: 0.0,
+                    }),
                     mesh_count: document.content.model_contents.len() as i32,
                 }),
                 mesh_reply: Some(GetMeshReply {
