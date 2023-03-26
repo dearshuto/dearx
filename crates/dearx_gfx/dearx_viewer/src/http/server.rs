@@ -1,4 +1,3 @@
-use chrono::Timelike;
 use hyper::StatusCode;
 use prost::Message;
 use std::{
@@ -145,25 +144,14 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
 
         // デバッグ目的で常にカラーを返したいので、なにかしらの値を返しておく
         // ロジックがリクエストを返したらそちらを採用
-        let (red, green, blue) = if let Some(scene_info) = reply.scene_info_reply {
-            let red = scene_info.red;
-            let green = scene_info.green;
-            let blue = scene_info.blue;
-            (red, green, blue)
-        } else {
-            let now = chrono::Utc::now();
-            if now.time().second() % 2 == 0 {
-                (1.0, 0.0, 0.0)
+        let color = if let Some(scene_info) = reply.scene_info_reply {
+            if let Some(background) = scene_info.background {
+                background
             } else {
-                (0.0, 0.0, 1.0)
+                Default::default()
             }
-        };
-
-        let color = crate::proto::Color {
-            red,
-            green,
-            blue,
-            alpha: 0.0,
+        } else {
+            Default::default()
         };
 
         // バイナリ化

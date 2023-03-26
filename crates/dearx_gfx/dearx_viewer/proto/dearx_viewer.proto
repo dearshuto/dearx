@@ -56,10 +56,7 @@ message GetSceneInfoReply
 {
     int32 mesh_count = 1;
 
-    // 以下の要素は通信をデバッグするための情報。将来的に消す。
-    float red = 2;
-    float green = 3;
-    float blue = 4;
+    Color background = 2;
 }
 
 message GetRequest
