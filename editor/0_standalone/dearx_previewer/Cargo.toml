@@ -11,3 +11,4 @@ wgpu = { version = "0.15.1", features = ["spirv"] }
 dearx_viewer = { path = "../../../crates/dearx_gfx/dearx_viewer" }
 tokio = { version = "1.0.0", features = ["full"] }
 bytemuck = "*"
+nalgebra = "0.32.2"

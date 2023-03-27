@@ -19,6 +19,7 @@ use winit::{
 struct App {
     pub color: [f32; 3],
     pub index_count: i32,
+    pub camera_position: nalgebra::Vector3<f32>,
 }
 
 // 通信によって背景色を変える実装
