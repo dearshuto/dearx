@@ -1,4 +1,5 @@
-use crate::proto::{Color, GetMeshRequest, GetReply, GetRequest, Mesh, ShaderBinary};
+use crate::proto::{Color, Mesh, ShaderBinary};
+use crate::proto::{GetMeshRequest, GetReply, GetRequest};
 use prost::Message;
 use std::result::Result;
 
@@ -41,7 +42,10 @@ impl Client {
     }
 
     pub async fn fetch_mesh(&mut self) -> Result<Mesh, ()> {
-        let request = GetMeshRequest { index: 1 };
+        let request = GetMeshRequest {
+            index: 1,
+            ..Default::default()
+        };
         let url = "http://localhost:3000/mesh";
         let response = self.client.get(url).query(&request).send().await.unwrap();
         let bytes = response.bytes().await.unwrap();

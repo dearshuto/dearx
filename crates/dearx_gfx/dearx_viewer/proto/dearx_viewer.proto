@@ -2,103 +2,135 @@ syntax = "proto3";
 
 package dearx_viewer;
 
-// import
-import "google/protobuf/timestamp.proto";
-import "google/protobuf/duration.proto";
+import public "proto/dearx/primitives.proto";
 
-message Color
-{
-    float red = 1;
-    float green = 2;
-    float blue = 3;
-    float alpha = 4;
+message GetMeshReply {
+  Mesh mesh = 1;
+
+  // メッシュ情報
+  // GetMeshRequest のインデックスと対応
+  repeated Mesh meshes = 2;
 }
 
-message ShaderBinary
-{
-    bytes vertex_shader_binary = 1;
-    bytes pixel_shader_binary = 2;
-    bytes compute_shader_binary = 3;
+message GetMeshRequest {
+  int32 index = 1;
 
+  // 情報を取得したいメッシュのインデックス
+  // 複数要素対応
+  repeated int32 indices = 2;
 }
 
-message Mesh
-{
-    repeated float vertices = 1;
-    repeated uint32 indices = 2;
+message GetShaderReply {
+  ShaderBinary shader_binary = 1;
+
+  // シェーダーバイナリ
+  // GetShaderRequest の shading_model_names のインデックスと一致
+  repeated ShaderBinary shader_binaries = 2;
 }
 
-message GetMeshReply
-{
-    Mesh mesh = 1;
+message GetShaderRequest {
+  // シェーダーを名前引き
+  string shading_model_names = 1;
 }
 
-message GetMeshRequest
-{
-    int32 index = 1;
+message GetSceneInfoRequest {
+  bool is_mesh_count_required = 1;
+
+  // シーンの ID
+  string id = 2;
 }
 
-message GetShaderReply
-{
-    ShaderBinary shader_binary = 1;
+message GetSceneInfoReply {
+  int32 mesh_count = 1;
+
+  Color background = 2;
 }
 
-message GetShaderRequest
-{
+message GetRequest {
+  GetSceneInfoRequest scene_info_request = 1;
+  GetMeshRequest mesh_request = 2;
+  GetShaderRequest shader_request = 3;
 }
 
-message GetSceneInfoRequest
-{
-    bool is_mesh_count_required = 1;
+message GetReply {
+  GetSceneInfoReply scene_info_reply = 1;
+  GetMeshReply mesh_reply = 2;
+  GetShaderReply shader_reply = 3;
+
+  // 全部の ID
+  repeated string ids = 4;
 }
 
-message GetSceneInfoReply
-{
-    int32 mesh_count = 1;
+message CreateRequest {}
 
-    Color background = 2;
+message CreateReply {
+  // 作成したドキュメントの ID
+  string id = 1;
 }
 
-message GetRequest
-{
-    GetSceneInfoRequest scene_info_request = 1;
-    GetMeshRequest mesh_request = 2;
-    GetShaderRequest shader_request = 3;
+message DeleteRequest {
+  // 削除するドキュメントの ID
+  string id = 1;
 }
 
-message GetReply
-{
-    GetSceneInfoReply scene_info_reply = 1;
-    GetMeshReply mesh_reply = 2;
-    GetShaderReply shader_reply = 3;
+message DeleteReply { int32 id = 1; }
+
+message UpdateRequest {
+  // 更新するドキュメントの ID
+  string id = 1;
+
+  // プレビュー用カメラの位置
+  Float3 preview_camera_position = 2;
 }
 
-message CreateRequest
-{
-    int32 id = 1;
+message UpdateReply { int32 id = 1; }
+
+message UpdateCameraRequest {
+  // 更新するドキュメントの ID
+  string id = 1;
+
+  // カメラの新規作成
+  bool is_new_instance = 2;
+
+  // 位置
+  Float3 translation = 3;
+
+  // 回転
+  Float3 rotation = 4;
+
+  // スケール
+  Float3 scale = 5;
 }
 
-message CreateReply
-{
-    int32 id = 1;
+message UpdateCameraReply {
+  // 更新したドキュメントの ID
+  string id = 1;
+
+  // 変更があったカメラの ID
+  string camera_id = 2;
 }
 
-message DeleteRequest
-{
-    int32 id = 1;
+message UpdateModelRequest {
+  // 更新するドキュメントの ID
+  string id = 1;
+
+  // モデルの新規作成
+  bool is_new_instance = 2;
+
+  // 位置
+  Float3 translation = 3;
+
+  // 回転
+  Float3 rotation = 4;
+
+  // スケール
+  Float3 scale = 5;
 }
 
-message DeleteReply
-{
-    int32 id = 1;
-}
+message UpdateModelReply {
+  // ドキュメントの ID
+  string document_id = 1;
 
-message UpdateRequest
-{
-    int32 id = 1;
-}
-
-message UpdateReply
-{
-    int32 id = 1;
+  // 変更があったモデルの ID
+  string model_id = 2;
 }
