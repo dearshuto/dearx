@@ -106,9 +106,9 @@ impl Default for App {
 impl IServerLogic for App {
     fn get(&mut self, request: &GetRequest) -> GetReply {
         let vertex_shader_source =
-            include_str!("../../../crates/dearx_gfx/dearx_gfx/resources/shaders/triangle.vs");
+            include_str!("../../../../crates/dearx_gfx/resources/shaders/triangle.vs");
         let pixel_shader_source =
-            include_str!("../../../crates/dearx_gfx/dearx_gfx/resources/shaders/triangle.fs");
+            include_str!("../../../../crates/dearx_gfx/resources/shaders/triangle.fs");
         let mut compiler = sjgfx_util::ShaderCompiler::new();
         let vertex_shader_binary =
             compiler.create_binary(vertex_shader_source, sjgfx_util::ShaderStage::Vertex);
@@ -154,14 +154,23 @@ impl IServerLogic for App {
                         vertices: vertices.clone(),
                         indices: indices.clone(),
                     }),
+                    ..Default::default()
                 }),
-                shader_reply: Some(GetShaderReply { shader_binary }),
+                shader_reply: Some(GetShaderReply {
+                    shader_binary,
+                    ..Default::default()
+                }),
+                ..Default::default()
             }
         } else {
             GetReply {
                 scene_info_reply: Some(Default::default()),
                 mesh_reply: None,
-                shader_reply: Some(GetShaderReply { shader_binary }),
+                shader_reply: Some(GetShaderReply {
+                    shader_binary,
+                    ..Default::default()
+                }),
+                ..Default::default()
             }
         }
     }
