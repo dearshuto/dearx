@@ -9,6 +9,7 @@ use std::{
 use warp::Filter;
 use warp::Reply;
 
+use crate::proto::ShaderBinary;
 use crate::proto::{
     CreateReply, CreateRequest, DeleteReply, DeleteRequest, GetMeshRequest, GetReply, GetRequest,
     GetSceneInfoRequest, GetShaderRequest, UpdateReply, UpdateRequest,
@@ -196,7 +197,7 @@ impl<T: Send + IServerLogic + 'static> Server<T> {
 
         let shader_binary = if let Some(shader_binary) = reply.shader_reply {
             if let Some(binary) = shader_binary.shader_binary {
-                crate::proto::ShaderBinary {
+                ShaderBinary {
                     vertex_shader_binary: binary.vertex_shader_binary,
                     pixel_shader_binary: binary.pixel_shader_binary,
                     compute_shader_binary: binary.compute_shader_binary,

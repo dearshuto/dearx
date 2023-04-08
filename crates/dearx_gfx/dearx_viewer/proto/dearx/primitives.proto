@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+message Float3 {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message Color {
+  float red = 1;
+  float green = 2;
+  float blue = 3;
+  float alpha = 4;
+}
+
+message ShaderBinary {
+  bytes vertex_shader_binary = 1;
+  bytes pixel_shader_binary = 2;
+  bytes compute_shader_binary = 3;
+}
+
+message Mesh {
+  repeated float vertices = 1;
+  repeated uint32 indices = 2;
+}
