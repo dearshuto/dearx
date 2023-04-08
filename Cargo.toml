@@ -1,16 +1,13 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/dearx_gfx/dearx_gfx",
-    "crates/dearx_gfx/dearx_viewer",
+    "crates/dearx_gfx",
+    "crates/dearx_viewer",
     "crates/dearx_macro",
     "crates/dearx_workspace",
-    # "dearx_app",
-    "editor/0_standalone/dearx_editor/src-tauri",
-    "editor/0_standalone/dearx_previewer/",
-    "editor/0_standalone/dearx_server/",
-    "editor/1_dearx_presentation/sycamore",
-    "editor/1_dearx_presentation/dearx_tool_windows",
-    "editor/2_dearx_application",
-    "editor/3_dearx_edit_model",
+    "standalone",
+    # "standalone/internal_crates/1_dearx_presentation/sycamore",
+    # "standalone/internal_crates/1_dearx_presentation/dearx_tool_windows",
+    "standalone/internal_crates/2_dearx_application",
+    "standalone/internal_crates/3_dearx_edit_model",
 ]

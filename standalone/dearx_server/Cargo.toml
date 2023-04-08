@@ -1,13 +1,12 @@
 [package]
-name = "dearx_edit_model"
+name = "dearx_server"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-uuid = { version = "1.0.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
-im = "*"
-num-traits = "0.2"
-dearx_macro = { path = "../../crates/dearx_macro" }
+dearx_application = { path = "../../2_dearx_application" }
+dearx_viewer = { path = "../../crates/dearx_viewer" }
 dearx_workspace = { path = "../../crates/dearx_workspace" }
+tokio = { version = "1.0.0", features = ["full"] }

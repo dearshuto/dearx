@@ -8,6 +8,6 @@ edition = "2021"
 [dependencies]
 winit = "*"
 wgpu = { version = "0.15.1", features = ["spirv"] }
-dearx_viewer = { path = "../../../crates/dearx_gfx/dearx_viewer" }
+dearx_viewer = { path = "../../crates/dearx_viewer" }
 tokio = { version = "1.0.0", features = ["full"] }
 bytemuck = "*"

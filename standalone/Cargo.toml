@@ -1,0 +1,27 @@
+[package]
+name = "dearx"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "dearx_previewer"
+path = "dearx_previewer/src/main.rs"
+
+[[bin]]
+name = "dearx_server"
+path = "dearx_server/src/main.rs"
+
+[dependencies]
+bytemuck = "*"
+im = "*"
+num-traits = "0.2"
+tokio = { version = "1.0.0", features = ["full"] }
+uuid = { version = "1.0.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
+winit = "*"
+wgpu = { version = "0.15.1", features = ["spirv"] }
+dearx_application = { path = "internal_crates/2_dearx_application" }
+dearx_viewer = { path = "../crates/dearx_viewer" }
+dearx_macro = { path = "../crates/dearx_macro" }
+dearx_workspace = { path = "../crates/dearx_workspace" }
