@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-reqwest = { version = "0.11.14" }
+reqwest = { version = "0.11.16" }
 chrono = "*" # http::Server の試験実装用。将来的に消す
 prost = { version = "0.11" }
 hyper = "*"
@@ -21,7 +21,7 @@ warp = "0.3.4"
 tonic = { version = "0.8.3", default-features = false }
 
 [build-dependencies]
-tonic-build = { version = "0.8.3", features = ["prost"] }
+tonic-build = { version = "0.9.1", features = ["prost"] }
 
 [dev-dependencies]
 wgpu = "0.15.1"
