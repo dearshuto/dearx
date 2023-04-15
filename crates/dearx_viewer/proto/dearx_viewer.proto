@@ -17,7 +17,7 @@ message GetMeshRequest {
 
   // 情報を取得したいメッシュのインデックス
   // 複数要素対応
-  repeated int32 indices = 2;
+  // repeated int32 indices = 2;
 }
 
 message GetShaderReply {
@@ -25,7 +25,7 @@ message GetShaderReply {
 
   // シェーダーバイナリ
   // GetShaderRequest の shading_model_names のインデックスと一致
-  repeated ShaderBinary shader_binaries = 2;
+  // repeated ShaderBinary shader_binaries = 2;
 }
 
 message GetShaderRequest {
