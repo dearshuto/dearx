@@ -1,5 +1,5 @@
 use crate::proto::{Color, Mesh, ShaderBinary};
-use crate::proto::{GetMeshRequest, GetReply, GetRequest};
+use crate::proto::{GetMeshRequest, GetReply, GetRequest, GetShaderRequest};
 use prost::Message;
 use std::result::Result;
 
@@ -13,9 +13,13 @@ impl Client {
     }
 
     pub async fn fetch_shader(&mut self) -> Result<ShaderBinary, ()> {
+        let request = GetShaderRequest {
+            ..Default::default()
+        };
         let response = self
             .client
             .get("http://localhost:3000/shader")
+            .query(&request)
             .send()
             .await
             .unwrap();
