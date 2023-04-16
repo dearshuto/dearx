@@ -1,7 +1,8 @@
 extern crate nalgebra_glm as glm;
 
-use sjgfx::{api::IApi, TBufferBuilder};
+use crate::IApi;
 
+#[allow(dead_code)]
 #[repr(C)]
 struct ViewData {
     model_matrix: glm::Mat4x4,
@@ -15,19 +16,12 @@ pub struct GeometryContainer<TApi: IApi> {
 }
 
 impl<TApi: IApi> GeometryContainer<TApi> {
-    pub fn new(device: &mut TApi::Device) -> Self {
-        let obj_data =
-            sjgfx_util::load_obj(device, include_str!("../../resources/models/cube.obj"));
-        let constant_buffer = TBufferBuilder::<TApi>::new()
-            .enable_constant_buffer()
-            .with_size(std::mem::size_of::<ViewData>())
-            .build(device);
-
+    pub fn new(_device: &mut TApi::Device) -> Self {
         Self {
-            vertex_buffers: vec![obj_data.vertex_buffer],
-            index_buffers: vec![obj_data.index_buffer],
-            constant_buffers: vec![constant_buffer],
-            index_counts: vec![obj_data.index_count],
+            vertex_buffers: vec![],
+            index_buffers: vec![],
+            constant_buffers: vec![],
+            index_counts: vec![],
         }
     }
 

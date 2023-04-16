@@ -1,11 +1,10 @@
 extern crate nalgebra_glm as glm;
 
 use crate::component::GeometryContainer;
-use sjgfx::api::IApi;
-use sjgfx_interface::IBuffer;
-
 use crate::component::TransformComponent;
+use crate::IApi;
 
+#[allow(dead_code)]
 #[repr(C)]
 struct ViewData {
     model_matrix: glm::Mat4x4,
@@ -61,10 +60,10 @@ impl<TApi: IApi> SceneUpdater<TApi> {
         }
 
         // ジオメトリの更新
-        for constant_buffer in scene.get_geometry_container_mut().get_constant_buffers() {
-            constant_buffer.map_mut(|data: &mut ViewData| {
-                data.model_matrix = glm::Mat4x4::identity();
-            });
-        }
+        // for constant_buffer in scene.get_geometry_container_mut().get_constant_buffers() {
+        //     constant_buffer.map_mut(|data: &mut ViewData| {
+        //         data.model_matrix = glm::Mat4x4::identity();
+        //     });
+        // }
     }
 }

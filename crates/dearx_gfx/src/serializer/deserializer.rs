@@ -1,5 +1,5 @@
+use crate::IApi;
 use crate::Scene;
-use sjgfx::api::IApi;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub fn deserialize<T: IApi>(data: &[u8]) -> Scene<T> {

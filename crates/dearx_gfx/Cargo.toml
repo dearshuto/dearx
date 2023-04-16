@@ -9,15 +9,14 @@ viewer = ["http-viewer"]
 http-viewer = []
 
 [dependencies]
-sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 nalgebra-glm = "0.3"
 naga = "0.11.0"
 wgpu = {version = "0.15.1", features = ["spirv", "webgl", "glsl"]}
 futures = {version = "*" }
+bytemuck = "*"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 usd-rs = { git = "https://github.com/dearshuto/usd-rs.git", branch = "develop" }
 tonic = { version = "0.8.3" }
 
@@ -36,4 +35,3 @@ prost = { version = "0.11" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.build-dependencies]
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-sjgfx = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
