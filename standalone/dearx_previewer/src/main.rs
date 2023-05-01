@@ -1,11 +1,10 @@
 use std::{
-    mem::size_of,
     sync::{Arc, Mutex},
     time::Duration,
 };
 
+use dearx_gfx::{wgpu::Scene, Renderer};
 use dearx_viewer::http::Client;
-use wgpu::{util::DeviceExt, VertexAttribute, VertexBufferLayout};
 use winit::{
     dpi::PhysicalSize,
     event::{Event, WindowEvent},
@@ -18,7 +17,6 @@ use winit::{
 #[derive(Default)]
 struct App {
     pub color: [f32; 3],
-    pub index_count: i32,
 }
 
 // 通信によって背景色を変える実装
@@ -75,18 +73,7 @@ async fn run() {
 
     surface.configure(&device, &config);
 
-    let mesh = client.fetch_mesh().await.unwrap();
-    let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-        label: None,
-        usage: wgpu::BufferUsages::VERTEX,
-        contents: bytemuck::cast_slice(&mesh.vertices),
-    });
-    let index_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-        label: None,
-        usage: wgpu::BufferUsages::INDEX,
-        contents: bytemuck::cast_slice(&mesh.indices),
-    });
-    app.lock().unwrap().index_count = mesh.indices.len() as i32;
+    let _mesh = client.fetch_mesh().await.unwrap();
 
     let shader = client.fetch_shader().await.unwrap();
     println!("Vertex Shader size: {}", shader.vertex_shader_binary.len());
@@ -95,48 +82,6 @@ async fn run() {
         "Compute Shader size: {}",
         shader.compute_shader_binary.len()
     );
-    let vertex_shader_module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
-        label: None,
-        source: wgpu::util::make_spirv(&shader.vertex_shader_binary),
-    });
-    let pixel_shader_module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
-        label: None,
-        source: wgpu::util::make_spirv(&shader.pixel_shader_binary),
-    });
-
-    let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-        label: None,
-        bind_group_layouts: &[],
-        push_constant_ranges: &[],
-    });
-
-    let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
-        label: None,
-        layout: Some(&pipeline_layout),
-        vertex: wgpu::VertexState {
-            module: &vertex_shader_module,
-            entry_point: "main",
-            buffers: &[VertexBufferLayout {
-                array_stride: (size_of::<f32>() * 3) as u64, // XYZ
-                step_mode: wgpu::VertexStepMode::Vertex,
-                attributes: &[VertexAttribute {
-                    format: wgpu::VertexFormat::Float32x3,
-                    offset: 0,
-                    shader_location: 0,
-                }],
-            }],
-        },
-        fragment: Some(wgpu::FragmentState {
-            module: &pixel_shader_module,
-            entry_point: "main",
-            targets: &[Some(swapchain_format.into())],
-        }),
-        primitive: wgpu::PrimitiveState::default(),
-        depth_stencil: None,
-        multisample: wgpu::MultisampleState::default(),
-        multiview: None,
-    });
-    // 描画用オブジェクトここまで
 
     // サーバーからの情報を取得
     let (sender, reciever) = std::sync::mpsc::channel::<bool>();
@@ -157,6 +102,9 @@ async fn run() {
             };
         }
     });
+
+    let scene = Scene::new_graphics(&device, swapchain_format);
+    let renderer = Renderer::default();
 
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
@@ -191,14 +139,7 @@ async fn run() {
                         depth_stencil_attachment: None,
                     });
 
-                    render_pass.set_pipeline(&render_pipeline);
-                    render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
-                    render_pass.set_index_buffer(index_buffer.slice(..), wgpu::IndexFormat::Uint32);
-                    render_pass.draw_indexed(
-                        0..app.index_count as u32,
-                        0,    /*base vertex*/
-                        0..1, /*インスタンス*/
-                    );
+                    renderer.render(&mut render_pass, &scene, scene.enumerate_draw_info());
                 }
 
                 queue.submit(Some(encoder.finish()));
