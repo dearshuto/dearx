@@ -1,8 +1,8 @@
 use wgpu::util::DeviceExt;
 
-use crate::{DrawCommandInfo, IGraphicsObjectId, IScene};
+use crate::{DrawCommandInfo, IScene};
 
-use super::DrawInfo;
+use super::{DrawInfo, Id};
 
 pub struct Scene {
     render_pipeline: Vec<wgpu::RenderPipeline>,
@@ -36,10 +36,17 @@ impl Scene {
             bind_group_layouts: &[],
             push_constant_ranges: &[],
         });
-        let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+        let vertex_buffer0 = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: None,
             contents: bytemuck::cast_slice(&[
-                -0.25f32, -0.25, 0.0, 0.25, -0.25, 0.0, 0.0, 0.25, 0.0,
+                -0.40f32, -0.25, 0.0, 0.10, -0.25, 0.0, -0.15, 0.25, 0.0,
+            ]),
+            usage: wgpu::BufferUsages::VERTEX,
+        });
+        let vertex_buffer1 = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: None,
+            contents: bytemuck::cast_slice(&[
+                -0.10f32, 0.25, 0.0, 0.40, 0.25, 0.0, 0.15, -0.25, 0.0,
             ]),
             usage: wgpu::BufferUsages::VERTEX,
         });
@@ -77,8 +84,19 @@ impl Scene {
 
         Self {
             render_pipeline: vec![render_pipeline],
-            vertex_buffers: vec![vertex_buffer],
-            draw_infos: vec![DrawInfo {}],
+            vertex_buffers: vec![vertex_buffer0, vertex_buffer1],
+            draw_infos: vec![
+                DrawInfo {
+                    pipeline_id: Id { index: 0 },
+                    vertex_buffer_ids: vec![Id { index: 0 }],
+                    draw_command_info: Id { index: 0 },
+                },
+                DrawInfo {
+                    pipeline_id: Id { index: 0 },
+                    vertex_buffer_ids: vec![Id { index: 1 }],
+                    draw_command_info: Id { index: 0 },
+                },
+            ],
         }
     }
 
@@ -104,16 +122,19 @@ impl Default for Scene {
 impl IScene for Scene {
     type TBuffer = wgpu::Buffer;
     type TPipeline = wgpu::RenderPipeline;
+    type TGraphicsObjectId = Id;
 
-    fn get_pipeline<TId: IGraphicsObjectId>(&self, _id: TId) -> &Self::TPipeline {
-        &self.render_pipeline[0]
+    fn get_pipeline(&self, id: Self::TGraphicsObjectId) -> &Self::TPipeline {
+        let index = id.index;
+        &self.render_pipeline[index as usize]
     }
 
-    fn get_vertex_buffer<TId: IGraphicsObjectId>(&self, _id: TId) -> &Self::TBuffer {
-        &self.vertex_buffers[0]
+    fn get_vertex_buffer(&self, id: Self::TGraphicsObjectId) -> &Self::TBuffer {
+        let index = id.index;
+        &self.vertex_buffers[index as usize]
     }
 
-    fn get_draw_info<TId: IGraphicsObjectId>(&self, _id: TId) -> crate::DrawCommandInfo {
+    fn get_draw_info(&self, _id: Self::TGraphicsObjectId) -> crate::DrawCommandInfo {
         DrawCommandInfo::Draw(3)
     }
 }
