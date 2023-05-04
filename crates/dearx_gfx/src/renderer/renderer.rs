@@ -9,11 +9,10 @@ pub trait IGraphicsObjectId: Copy + Eq {}
 
 pub trait IDrawInfo {
     type TId: IGraphicsObjectId;
-    type TIterator: Iterator<Item = Self::TId>;
 
     fn get_pipeline_id(&self) -> Self::TId;
 
-    fn get_vertex_buffer_ids(&self) -> Self::TIterator;
+    fn get_vertex_buffer_ids(&self) -> &[Self::TId];
 
     fn get_draw_command_info_id(&self) -> Self::TId;
 }
@@ -21,12 +20,13 @@ pub trait IDrawInfo {
 pub trait IScene {
     type TBuffer;
     type TPipeline;
+    type TGraphicsObjectId: IGraphicsObjectId;
 
-    fn get_pipeline<TId: IGraphicsObjectId>(&self, id: TId) -> &Self::TPipeline;
+    fn get_pipeline(&self, id: Self::TGraphicsObjectId) -> &Self::TPipeline;
 
-    fn get_vertex_buffer<TId: IGraphicsObjectId>(&self, id: TId) -> &Self::TBuffer;
+    fn get_vertex_buffer(&self, id: Self::TGraphicsObjectId) -> &Self::TBuffer;
 
-    fn get_draw_info<TId: IGraphicsObjectId>(&self, id: TId) -> DrawCommandInfo;
+    fn get_draw_info(&self, id: Self::TGraphicsObjectId) -> DrawCommandInfo;
 }
 
 pub trait ICommandBuffer<'a> {
@@ -51,7 +51,11 @@ impl Renderer {
         iterator: TIterator,
     ) where
         TCommandBuffer: ICommandBuffer<'a> + 'a,
-        TScene: IScene<TBuffer = TCommandBuffer::TBuffer, TPipeline = TCommandBuffer::TPipeline>,
+        TScene: IScene<
+            TBuffer = TCommandBuffer::TBuffer,
+            TPipeline = TCommandBuffer::TPipeline,
+            TGraphicsObjectId = TDrawInfo::TId,
+        >,
         TDrawInfo: IDrawInfo,
         TIterator: IntoIterator<Item = TDrawInfo>,
     {
@@ -68,7 +72,11 @@ impl Renderer {
     ) where
         TCommandBuffer: ICommandBuffer<'a> + 'a,
         TDrawInfo: IDrawInfo,
-        TScene: IScene<TBuffer = TCommandBuffer::TBuffer, TPipeline = TCommandBuffer::TPipeline>,
+        TScene: IScene<
+            TBuffer = TCommandBuffer::TBuffer,
+            TPipeline = TCommandBuffer::TPipeline,
+            TGraphicsObjectId = TDrawInfo::TId,
+        >,
     {
         // パイプライン
         let pipeline_id = draw_info.get_pipeline_id();
@@ -77,7 +85,7 @@ impl Renderer {
 
         // 頂点バッファー
         for id in draw_info.get_vertex_buffer_ids() {
-            let vertex_buffer = scene.get_vertex_buffer(id);
+            let vertex_buffer = scene.get_vertex_buffer(*id);
             command_buffer.set_vertex_buffer(0, vertex_buffer);
         }
 
