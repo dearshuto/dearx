@@ -72,6 +72,19 @@ impl<'a> IFactory for Factory<'a> {
             descriptor.pixel_shader.unwrap(),
         );
 
+        let vertex_shader_reflection =
+            sjgfx_util::ShaderReflection::new_from_biinary(descriptor.vertex_shader);
+        let attributes = vertex_shader_reflection
+            .entry_point
+            .attribures()
+            .iter()
+            .map(|attribute| wgpu::VertexAttribute {
+                format: sjgfx_wgpu::util::convert_attribute_format(attribute.format()),
+                offset: attribute.offset() as u64,
+                shader_location: attribute.location(),
+            })
+            .collect::<Vec<wgpu::VertexAttribute>>();
+
         self.device
             .create_render_pipeline(&wgpu::RenderPipelineDescriptor {
                 label: None,
@@ -80,13 +93,9 @@ impl<'a> IFactory for Factory<'a> {
                     module: &vertex_shader_module,
                     entry_point: "main",
                     buffers: &[wgpu::VertexBufferLayout {
-                        array_stride: (std::mem::size_of::<f32>() * 3) as u64,
+                        array_stride: descriptor.vertex_buffer_offsets[0] as u64,
                         step_mode: wgpu::VertexStepMode::Vertex,
-                        attributes: &[wgpu::VertexAttribute {
-                            format: wgpu::VertexFormat::Float32x2,
-                            offset: 0,
-                            shader_location: 0,
-                        }],
+                        attributes: &attributes,
                     }],
                 },
                 primitive: wgpu::PrimitiveState::default(),
