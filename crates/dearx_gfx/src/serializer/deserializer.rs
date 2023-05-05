@@ -21,7 +21,6 @@ pub struct CreateRenderPipelineDescriptor<'a> {
     pub pixel_shader: Option<&'a [u8]>,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 pub fn deserialize<TFactory: IFactory>(
     _data: &[u8],
     factory: &mut TFactory,
