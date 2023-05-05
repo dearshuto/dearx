@@ -1,6 +1,4 @@
-use wgpu::util::DeviceExt;
-
-use crate::{DrawCommandInfo, IScene};
+use crate::{renderer::SceneObject, DrawCommandInfo, IScene};
 
 use super::{DrawInfo, Id};
 
@@ -11,7 +9,11 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn new_graphics(device: &wgpu::Device, fragment_format: wgpu::TextureFormat) -> Self {
+    pub fn new_graphics(
+        device: &wgpu::Device,
+        fragment_format: wgpu::TextureFormat,
+        scene_object: SceneObject<wgpu::Buffer>,
+    ) -> Self {
         // シェーダーバイナリ
         let vertex_shader_source = include_str!("../../../resources/shaders/triangle.vs");
         let pixel_shader_source = include_str!("../../../resources/shaders/triangle.fs");
@@ -35,20 +37,6 @@ impl Scene {
             label: None,
             bind_group_layouts: &[],
             push_constant_ranges: &[],
-        });
-        let vertex_buffer0 = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: None,
-            contents: bytemuck::cast_slice(&[
-                -0.40f32, -0.25, 0.0, 0.10, -0.25, 0.0, -0.15, 0.25, 0.0,
-            ]),
-            usage: wgpu::BufferUsages::VERTEX,
-        });
-        let vertex_buffer1 = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: None,
-            contents: bytemuck::cast_slice(&[
-                -0.10f32, 0.25, 0.0, 0.40, 0.25, 0.0, 0.15, -0.25, 0.0,
-            ]),
-            usage: wgpu::BufferUsages::VERTEX,
         });
 
         let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -84,7 +72,7 @@ impl Scene {
 
         Self {
             render_pipeline: vec![render_pipeline],
-            vertex_buffers: vec![vertex_buffer0, vertex_buffer1],
+            vertex_buffers: scene_object.vertex_buffers,
             draw_infos: vec![
                 DrawInfo {
                     pipeline_id: Id { index: 0 },

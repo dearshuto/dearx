@@ -3,7 +3,11 @@ use std::{
     time::Duration,
 };
 
-use dearx_gfx::{wgpu::Scene, Renderer};
+use dearx_gfx::{
+    serializer::deserialize,
+    wgpu::{Factory, Scene},
+    Renderer,
+};
 use dearx_viewer::http::Client;
 use winit::{
     dpi::PhysicalSize,
@@ -103,7 +107,11 @@ async fn run() {
         }
     });
 
-    let scene = Scene::new_graphics(&device, swapchain_format);
+    let scene = {
+        let mut factory = Factory::new(&device);
+        let scene_object = deserialize(&[], &mut factory);
+        Scene::new_graphics(&device, swapchain_format, scene_object)
+    };
     let renderer = Renderer::default();
 
     event_loop.run(move |event, _, control_flow| {
