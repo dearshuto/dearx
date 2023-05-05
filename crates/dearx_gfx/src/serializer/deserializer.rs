@@ -22,7 +22,6 @@ pub struct CreateRenderPipelineDescriptor<'a> {
     pub texture_format: Option<sjgfx_interface::ImageFormat>,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 pub fn deserialize<TFactory: IFactory>(
     _data: &[u8],
     factory: &mut TFactory,
