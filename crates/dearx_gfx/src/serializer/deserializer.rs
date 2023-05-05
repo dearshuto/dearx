@@ -19,6 +19,7 @@ pub struct CreateBufferDescriptor<'a> {
 pub struct CreateRenderPipelineDescriptor<'a> {
     pub vertex_shader: &'a [u8],
     pub pixel_shader: Option<&'a [u8]>,
+    pub texture_format: Option<sjgfx_interface::ImageFormat>,
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -40,6 +41,7 @@ pub fn deserialize<TFactory: IFactory>(
     let pipeline = factory.create_render_pipeline(&CreateRenderPipelineDescriptor {
         vertex_shader: &vertex_shader_binary,
         pixel_shader: Some(&pixel_shader_binary),
+        texture_format: None,
     });
 
     let vertex_buffer_data0 =
