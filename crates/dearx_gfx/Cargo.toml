@@ -15,6 +15,7 @@ wgpu = {version = "0.15.1", features = ["spirv", "webgl", "glsl"]}
 futures = {version = "*" }
 bytemuck = "*"
 sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjgfx-wgpu = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }

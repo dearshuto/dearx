@@ -1,6 +1,9 @@
 use wgpu::{util::DeviceExt, Device};
 
-use crate::serializer::{CreateBufferDescriptor, CreateRenderPipelineDescriptor, IFactory};
+use crate::serializer::{
+    CreateBufferDescriptor, CreateDescriptorPoolDescriptor, CreateRenderPipelineDescriptor,
+    IFactory,
+};
 
 pub struct Factory<'a> {
     device: &'a wgpu::Device,
@@ -14,27 +17,19 @@ impl<'a> Factory<'a> {
             format: render_target_format,
         }
     }
-
-    fn convert_gpu_access(gpu_access: sjgfx_interface::GpuAccess) -> wgpu::BufferUsages {
-        match gpu_access {
-            sjgfx_interface::GpuAccess::VERTEX_BUFFER => wgpu::BufferUsages::VERTEX,
-            sjgfx_interface::GpuAccess::INDEX_BUFFER => wgpu::BufferUsages::INDEX,
-            sjgfx_interface::GpuAccess::CONSTANT_BUFFER => wgpu::BufferUsages::UNIFORM,
-            _ => panic!(),
-        }
-    }
 }
 
 impl<'a> IFactory for Factory<'a> {
     type TBuffer = wgpu::Buffer;
     type TRenderPipeline = wgpu::RenderPipeline;
+    type TDescriptorPool = wgpu::BindGroupLayout;
 
     fn create_buffer(&self, descriptor: &CreateBufferDescriptor) -> Self::TBuffer {
         self.device
             .create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label: None,
                 contents: descriptor.data,
-                usage: Self::convert_gpu_access(descriptor.gpu_access),
+                usage: sjgfx_wgpu::util::convert_to_buffer_usage(descriptor.gpu_access),
             })
     }
 
@@ -71,13 +66,11 @@ impl<'a> IFactory for Factory<'a> {
                     targets,
                 });
 
-        let pipeline_layout = self
-            .device
-            .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-                label: None,
-                bind_group_layouts: &[],
-                push_constant_ranges: &[],
-            });
+        let pipeline_layout = sjgfx_wgpu::util::create_pipeline_layout(
+            self.device,
+            descriptor.vertex_shader,
+            descriptor.pixel_shader.unwrap(),
+        );
 
         self.device
             .create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -102,5 +95,16 @@ impl<'a> IFactory for Factory<'a> {
                 fragment: fragment_state,
                 multiview: None,
             })
+    }
+
+    fn create_descriptor_pool(
+        &self,
+        descriptor: &CreateDescriptorPoolDescriptor,
+    ) -> Self::TDescriptorPool {
+        sjgfx_wgpu::util::create_bind_group_layout(
+            self.device,
+            descriptor.vertex_shader,
+            descriptor.pixel_shader,
+        )
     }
 }

@@ -5,6 +5,7 @@ mod deserializer;
 mod serializer;
 
 pub use deserializer::{
-    deserialize, CreateBufferDescriptor, CreateRenderPipelineDescriptor, IFactory,
+    deserialize, CreateBufferDescriptor, CreateDescriptorPoolDescriptor,
+    CreateRenderPipelineDescriptor, IFactory,
 };
 pub use serializer::serialize;
