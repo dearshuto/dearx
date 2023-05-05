@@ -108,7 +108,7 @@ async fn run() {
     });
 
     let scene = {
-        let mut factory = Factory::new(&device);
+        let mut factory = Factory::new(&device, swapchain_format);
         let scene_object = deserialize(&[], &mut factory);
         Scene::new_graphics(&device, swapchain_format, scene_object)
     };

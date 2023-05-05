@@ -4,11 +4,15 @@ use crate::serializer::{CreateBufferDescriptor, CreateRenderPipelineDescriptor, 
 
 pub struct Factory<'a> {
     device: &'a wgpu::Device,
+    format: wgpu::TextureFormat,
 }
 
 impl<'a> Factory<'a> {
-    pub fn new(device: &'a Device) -> Self {
-        Self { device }
+    pub fn new(device: &'a Device, render_target_format: wgpu::TextureFormat) -> Self {
+        Self {
+            device,
+            format: render_target_format,
+        }
     }
 }
 
@@ -45,7 +49,7 @@ impl<'a> IFactory for Factory<'a> {
         });
 
         let targets = &[Some(wgpu::ColorTargetState {
-            format: /*fragment_format*/wgpu::TextureFormat::Bgra8UnormSrgb,
+            format: self.format,
             blend: None,
             write_mask: wgpu::ColorWrites::all(),
         })];
