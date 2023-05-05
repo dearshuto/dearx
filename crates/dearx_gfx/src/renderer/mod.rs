@@ -5,6 +5,7 @@ pub mod wgpu;
 
 pub use renderer::*;
 
-pub struct SceneObject<TBuffer> {
+pub struct SceneObject<TBuffer, TPipeline> {
     pub vertex_buffers: Vec<TBuffer>,
+    pub pipelines: Vec<TPipeline>,
 }
