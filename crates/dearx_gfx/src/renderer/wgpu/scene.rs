@@ -10,68 +10,12 @@ pub struct Scene {
 
 impl Scene {
     pub fn new_graphics(
-        device: &wgpu::Device,
-        fragment_format: wgpu::TextureFormat,
-        scene_object: SceneObject<wgpu::Buffer>,
+        _device: &wgpu::Device,
+        _fragment_format: wgpu::TextureFormat,
+        scene_object: SceneObject<wgpu::Buffer, wgpu::RenderPipeline>,
     ) -> Self {
-        // シェーダーバイナリ
-        let vertex_shader_source = include_str!("../../../resources/shaders/triangle.vs");
-        let pixel_shader_source = include_str!("../../../resources/shaders/triangle.fs");
-        let mut compiler = sjgfx_util::ShaderCompiler::new();
-        let vertex_shader_binary =
-            compiler.create_binary(vertex_shader_source, sjgfx_util::ShaderStage::Vertex);
-        let pixel_shader_binary =
-            compiler.create_binary(pixel_shader_source, sjgfx_util::ShaderStage::Pixel);
-
-        // シェーダーモジュール
-        let vertex_shader_module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
-            label: None,
-            source: wgpu::util::make_spirv(&vertex_shader_binary),
-        });
-        let pixel_shader_module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
-            label: None,
-            source: wgpu::util::make_spirv(&pixel_shader_binary),
-        });
-
-        let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-            label: None,
-            bind_group_layouts: &[],
-            push_constant_ranges: &[],
-        });
-
-        let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
-            label: None,
-            layout: Some(&pipeline_layout),
-            vertex: wgpu::VertexState {
-                module: &vertex_shader_module,
-                entry_point: "main",
-                buffers: &[wgpu::VertexBufferLayout {
-                    array_stride: (std::mem::size_of::<f32>() * 3) as u64,
-                    step_mode: wgpu::VertexStepMode::Vertex,
-                    attributes: &[wgpu::VertexAttribute {
-                        format: wgpu::VertexFormat::Float32x2,
-                        offset: 0,
-                        shader_location: 0,
-                    }],
-                }],
-            },
-            primitive: wgpu::PrimitiveState::default(),
-            depth_stencil: None,
-            multisample: wgpu::MultisampleState::default(),
-            fragment: Some(wgpu::FragmentState {
-                module: &pixel_shader_module,
-                entry_point: "main",
-                targets: &[Some(wgpu::ColorTargetState {
-                    format: fragment_format,
-                    blend: None,
-                    write_mask: wgpu::ColorWrites::all(),
-                })],
-            }),
-            multiview: None,
-        });
-
         Self {
-            render_pipeline: vec![render_pipeline],
+            render_pipeline: scene_object.pipelines,
             vertex_buffers: scene_object.vertex_buffers,
             draw_infos: vec![
                 DrawInfo {

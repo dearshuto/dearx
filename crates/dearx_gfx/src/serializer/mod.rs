@@ -4,5 +4,7 @@ mod deserializer;
 #[allow(clippy::module_inception)]
 mod serializer;
 
-pub use deserializer::{deserialize, CreateBufferDescriptor, IFactory};
+pub use deserializer::{
+    deserialize, CreateBufferDescriptor, CreateRenderPipelineDescriptor, IFactory,
+};
 pub use serializer::serialize;
