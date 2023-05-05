@@ -15,7 +15,7 @@ pub trait IFactory {
 
     fn create_descriptor_pool(
         &self,
-        descriptor: &CreateDescriptorPoolDescriptor,
+        descriptor: &CreateDescriptorPoolDescriptor<Self::TBuffer>,
     ) -> Self::TDescriptorPool;
 }
 
@@ -31,9 +31,10 @@ pub struct CreateRenderPipelineDescriptor<'a> {
     pub texture_format: Option<sjgfx_interface::ImageFormat>,
 }
 
-pub struct CreateDescriptorPoolDescriptor<'a> {
+pub struct CreateDescriptorPoolDescriptor<'a, TBuffer> {
     pub vertex_shader: &'a [u8],
     pub pixel_shader: &'a [u8],
+    pub constant_buffers: &'a [&'a TBuffer],
 }
 
 pub fn deserialize<TFactory: IFactory>(
@@ -98,10 +99,12 @@ pub fn deserialize<TFactory: IFactory>(
     let bind_group = factory.create_descriptor_pool(&CreateDescriptorPoolDescriptor {
         vertex_shader: &vertex_shader_binary,
         pixel_shader: &pixel_shader_binary,
+        constant_buffers: &[],
     });
     let bind_group_3d = factory.create_descriptor_pool(&CreateDescriptorPoolDescriptor {
         vertex_shader: &vertex_shader_binary_3d,
         pixel_shader: &pixel_shader_binary_3d,
+        constant_buffers: &[&model_data_buffer, &view_buffer, &model_data_buffer], // TODO: ここ適当なので直す
     });
 
     SceneObject {

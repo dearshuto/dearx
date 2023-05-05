@@ -14,19 +14,13 @@ pub struct Scene {
 
 impl Scene {
     pub fn new_graphics(
-        device: &wgpu::Device,
+        _device: &wgpu::Device,
         _fragment_format: wgpu::TextureFormat,
-        scene_object: SceneObject<wgpu::Buffer, wgpu::RenderPipeline, wgpu::BindGroupLayout>,
+        scene_object: SceneObject<wgpu::Buffer, wgpu::RenderPipeline, wgpu::BindGroup>,
     ) -> Self {
-        let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-            label: None,
-            layout: &scene_object.descriptor_pool[0],
-            entries: &[],
-        });
-
         Self {
             render_pipeline: scene_object.pipelines,
-            bind_group: vec![bind_group],
+            bind_group: scene_object.descriptor_pool,
             vertex_buffers: scene_object.vertex_buffers,
             constant_buffers: scene_object.constant_buffers,
             draw_infos: vec![

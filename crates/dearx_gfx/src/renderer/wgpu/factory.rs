@@ -22,7 +22,7 @@ impl<'a> Factory<'a> {
 impl<'a> IFactory for Factory<'a> {
     type TBuffer = wgpu::Buffer;
     type TRenderPipeline = wgpu::RenderPipeline;
-    type TDescriptorPool = wgpu::BindGroupLayout;
+    type TDescriptorPool = wgpu::BindGroup;
 
     fn create_buffer(&self, descriptor: &CreateBufferDescriptor) -> Self::TBuffer {
         self.device
@@ -108,12 +108,27 @@ impl<'a> IFactory for Factory<'a> {
 
     fn create_descriptor_pool(
         &self,
-        descriptor: &CreateDescriptorPoolDescriptor,
+        descriptor: &CreateDescriptorPoolDescriptor<Self::TBuffer>,
     ) -> Self::TDescriptorPool {
-        sjgfx_wgpu::util::create_bind_group_layout(
+        let layout = sjgfx_wgpu::util::create_bind_group_layout(
             self.device,
             descriptor.vertex_shader,
             descriptor.pixel_shader,
-        )
+        );
+
+        let entries = descriptor
+            .constant_buffers
+            .iter()
+            .enumerate()
+            .map(|(index, buffer)| wgpu::BindGroupEntry {
+                binding: index as u32,
+                resource: buffer.as_entire_binding(),
+            })
+            .collect::<Vec<wgpu::BindGroupEntry>>();
+        self.device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: None,
+            layout: &layout,
+            entries: &entries,
+        })
     }
 }
