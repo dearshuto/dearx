@@ -8,6 +8,7 @@ impl IGraphicsObjectId for Id {}
 
 pub struct DrawInfo {
     pub(crate) pipeline_id: Id,
+    pub(crate) descriptor_pool_id: Id,
     pub(crate) vertex_buffer_ids: Vec<Id>,
     pub(crate) draw_command_info: Id,
 }
@@ -17,6 +18,10 @@ impl<'a> IDrawInfo for &'a DrawInfo {
 
     fn get_pipeline_id(&self) -> Self::TId {
         self.pipeline_id
+    }
+
+    fn get_descriptor_pool_id(&self) -> Self::TId {
+        self.descriptor_pool_id
     }
 
     fn get_vertex_buffer_ids(&self) -> &[Self::TId] {

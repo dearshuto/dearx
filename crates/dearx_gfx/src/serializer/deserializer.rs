@@ -4,6 +4,7 @@ use nalgebra_glm;
 pub trait IFactory {
     type TBuffer;
     type TRenderPipeline;
+    type TDescriptorPool;
 
     fn create_buffer(&self, descriptor: &CreateBufferDescriptor) -> Self::TBuffer;
 
@@ -11,6 +12,11 @@ pub trait IFactory {
         &self,
         descriptor: &CreateRenderPipelineDescriptor,
     ) -> Self::TRenderPipeline;
+
+    fn create_descriptor_pool(
+        &self,
+        descriptor: &CreateDescriptorPoolDescriptor,
+    ) -> Self::TDescriptorPool;
 }
 
 pub struct CreateBufferDescriptor<'a> {
@@ -24,10 +30,15 @@ pub struct CreateRenderPipelineDescriptor<'a> {
     pub texture_format: Option<sjgfx_interface::ImageFormat>,
 }
 
+pub struct CreateDescriptorPoolDescriptor<'a> {
+    pub vertex_shader: &'a [u8],
+    pub pixel_shader: &'a [u8],
+}
+
 pub fn deserialize<TFactory: IFactory>(
     _data: &[u8],
     factory: &mut TFactory,
-) -> SceneObject<TFactory::TBuffer, TFactory::TRenderPipeline> {
+) -> SceneObject<TFactory::TBuffer, TFactory::TRenderPipeline, TFactory::TDescriptorPool> {
     // let mut stream_reader = usd_rs::StreamReader::new(data);
     // let _reader = usd_rs::AsciiReader::new(&mut stream_reader);
 
@@ -80,10 +91,17 @@ pub fn deserialize<TFactory: IFactory>(
         gpu_access: sjgfx_interface::GpuAccess::CONSTANT_BUFFER,
     });
 
+    // デスクリプター設定
+    let bind_group = factory.create_descriptor_pool(&CreateDescriptorPoolDescriptor {
+        vertex_shader: &vertex_shader_binary,
+        pixel_shader: &pixel_shader_binary,
+    });
+
     SceneObject {
         vertex_buffers: vec![vertex_buffer0, vertex_buffer1],
         constant_buffers: vec![model_data_buffer, view_buffer],
         pipelines: vec![pipeline],
+        descriptor_pool: vec![bind_group],
     }
 }
 

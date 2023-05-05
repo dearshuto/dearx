@@ -3,6 +3,7 @@ use crate::{renderer::SceneObject, DrawCommandInfo, IScene};
 
 pub struct Scene {
     render_pipeline: Vec<wgpu::RenderPipeline>,
+    bind_group: Vec<wgpu::BindGroup>,
     vertex_buffers: Vec<wgpu::Buffer>,
 
     #[allow(dead_code)]
@@ -13,22 +14,31 @@ pub struct Scene {
 
 impl Scene {
     pub fn new_graphics(
-        _device: &wgpu::Device,
+        device: &wgpu::Device,
         _fragment_format: wgpu::TextureFormat,
-        scene_object: SceneObject<wgpu::Buffer, wgpu::RenderPipeline>,
+        scene_object: SceneObject<wgpu::Buffer, wgpu::RenderPipeline, wgpu::BindGroupLayout>,
     ) -> Self {
+        let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: None,
+            layout: &scene_object.descriptor_pool[0],
+            entries: &[],
+        });
+
         Self {
             render_pipeline: scene_object.pipelines,
+            bind_group: vec![bind_group],
             vertex_buffers: scene_object.vertex_buffers,
             constant_buffers: scene_object.constant_buffers,
             draw_infos: vec![
                 DrawInfo {
                     pipeline_id: Id { index: 0 },
+                    descriptor_pool_id: Id { index: 0 },
                     vertex_buffer_ids: vec![Id { index: 0 }],
                     draw_command_info: Id { index: 0 },
                 },
                 DrawInfo {
                     pipeline_id: Id { index: 0 },
+                    descriptor_pool_id: Id { index: 0 },
                     vertex_buffer_ids: vec![Id { index: 1 }],
                     draw_command_info: Id { index: 0 },
                 },
@@ -62,11 +72,17 @@ impl Default for Scene {
 impl IScene for Scene {
     type TBuffer = wgpu::Buffer;
     type TPipeline = wgpu::RenderPipeline;
+    type TDescriptorPool = wgpu::BindGroup;
     type TGraphicsObjectId = Id;
 
     fn get_pipeline(&self, id: Self::TGraphicsObjectId) -> &Self::TPipeline {
         let index = id.index;
         &self.render_pipeline[index as usize]
+    }
+
+    fn get_descriptor_pool(&self, id: Self::TGraphicsObjectId) -> &Self::TDescriptorPool {
+        let index = id.index;
+        &self.bind_group[index as usize]
     }
 
     fn get_vertex_buffer(&self, id: Self::TGraphicsObjectId) -> &Self::TBuffer {

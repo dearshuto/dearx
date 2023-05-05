@@ -12,6 +12,8 @@ pub trait IDrawInfo {
 
     fn get_pipeline_id(&self) -> Self::TId;
 
+    fn get_descriptor_pool_id(&self) -> Self::TId;
+
     fn get_vertex_buffer_ids(&self) -> &[Self::TId];
 
     fn get_draw_command_info_id(&self) -> Self::TId;
@@ -20,9 +22,12 @@ pub trait IDrawInfo {
 pub trait IScene {
     type TBuffer;
     type TPipeline;
+    type TDescriptorPool;
     type TGraphicsObjectId: IGraphicsObjectId;
 
     fn get_pipeline(&self, id: Self::TGraphicsObjectId) -> &Self::TPipeline;
+
+    fn get_descriptor_pool(&self, id: Self::TGraphicsObjectId) -> &Self::TDescriptorPool;
 
     fn get_vertex_buffer(&self, id: Self::TGraphicsObjectId) -> &Self::TBuffer;
 
@@ -32,8 +37,11 @@ pub trait IScene {
 pub trait ICommandBuffer<'a> {
     type TBuffer;
     type TPipeline;
+    type TDescriptorPool;
 
     fn set_pipeline(&mut self, pipeline: &'a Self::TPipeline);
+
+    fn set_descriptor_pool(&mut self, descriptor_pool: &'a Self::TDescriptorPool);
 
     fn set_vertex_buffer(&mut self, index: i32, buffer_ref: &'a Self::TBuffer);
 
@@ -54,6 +62,7 @@ impl Renderer {
         TScene: IScene<
             TBuffer = TCommandBuffer::TBuffer,
             TPipeline = TCommandBuffer::TPipeline,
+            TDescriptorPool = TCommandBuffer::TDescriptorPool,
             TGraphicsObjectId = TDrawInfo::TId,
         >,
         TDrawInfo: IDrawInfo,
@@ -75,6 +84,7 @@ impl Renderer {
         TScene: IScene<
             TBuffer = TCommandBuffer::TBuffer,
             TPipeline = TCommandBuffer::TPipeline,
+            TDescriptorPool = TCommandBuffer::TDescriptorPool,
             TGraphicsObjectId = TDrawInfo::TId,
         >,
     {
@@ -82,6 +92,11 @@ impl Renderer {
         let pipeline_id = draw_info.get_pipeline_id();
         let pipeline = scene.get_pipeline(pipeline_id);
         command_buffer.set_pipeline(pipeline);
+
+        // デスクリプター
+        let descriptor_pool_id = draw_info.get_descriptor_pool_id();
+        let descriptor_pool = scene.get_descriptor_pool(descriptor_pool_id);
+        command_buffer.set_descriptor_pool(descriptor_pool);
 
         // 頂点バッファー
         for id in draw_info.get_vertex_buffer_ids() {
