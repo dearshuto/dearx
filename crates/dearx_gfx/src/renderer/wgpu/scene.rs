@@ -1,10 +1,13 @@
-use crate::{renderer::SceneObject, DrawCommandInfo, IScene};
-
 use super::{DrawInfo, Id};
+use crate::{renderer::SceneObject, DrawCommandInfo, IScene};
 
 pub struct Scene {
     render_pipeline: Vec<wgpu::RenderPipeline>,
     vertex_buffers: Vec<wgpu::Buffer>,
+
+    #[allow(dead_code)]
+    constant_buffers: Vec<wgpu::Buffer>,
+
     draw_infos: Vec<DrawInfo>,
 }
 
@@ -17,6 +20,7 @@ impl Scene {
         Self {
             render_pipeline: scene_object.pipelines,
             vertex_buffers: scene_object.vertex_buffers,
+            constant_buffers: scene_object.constant_buffers,
             draw_infos: vec![
                 DrawInfo {
                     pipeline_id: Id { index: 0 },
@@ -34,10 +38,14 @@ impl Scene {
 
     pub fn new() -> Self {
         Self {
-            render_pipeline: Vec::default(),
-            vertex_buffers: Vec::default(),
-            draw_infos: Vec::default(),
+            ..Default::default()
         }
+    }
+
+    pub fn deserialize(data: &[u8]) -> Self {
+        let mut stream_reader = usd_rs::StreamReader::new(data);
+        let _reader = usd_rs::AsciiReader::new(&mut stream_reader);
+        todo!()
     }
 
     pub fn enumerate_draw_info(&self) -> &[DrawInfo] {

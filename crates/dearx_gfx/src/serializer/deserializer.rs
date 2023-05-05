@@ -1,4 +1,5 @@
-use crate::renderer::SceneObject;
+use crate::{renderer::SceneObject, ModelData, ViewData};
+use nalgebra_glm;
 
 pub trait IFactory {
     type TBuffer;
@@ -14,6 +15,7 @@ pub trait IFactory {
 
 pub struct CreateBufferDescriptor<'a> {
     pub data: &'a [u8],
+    pub gpu_access: sjgfx_interface::GpuAccess,
 }
 
 pub struct CreateRenderPipelineDescriptor<'a> {
@@ -50,13 +52,49 @@ pub fn deserialize<TFactory: IFactory>(
 
     let vertex_buffer0 = factory.create_buffer(&CreateBufferDescriptor {
         data: vertex_buffer_data0,
+        gpu_access: sjgfx_interface::GpuAccess::VERTEX_BUFFER,
     });
     let vertex_buffer1 = factory.create_buffer(&CreateBufferDescriptor {
         data: vertex_buffer_data1,
+        gpu_access: sjgfx_interface::GpuAccess::VERTEX_BUFFER,
+    });
+
+    // モデルの定数バッファ
+    let model_data_buffer = factory.create_buffer(&CreateBufferDescriptor {
+        data: unsafe {
+            any_as_u8_slice(&ModelData {
+                modelmatrix: convert(&nalgebra_glm::Mat4x4::identity()),
+            })
+        },
+        gpu_access: sjgfx_interface::GpuAccess::CONSTANT_BUFFER,
+    });
+
+    // PV の定数バッファ
+    let pv = nalgebra_glm::perspective_fov(0.14, 640.0, 480.0, 0.1, 100.0);
+    let view_buffer = factory.create_buffer(&CreateBufferDescriptor {
+        data: unsafe {
+            any_as_u8_slice(&ViewData {
+                projection_view_matrix: convert(&pv),
+            })
+        },
+        gpu_access: sjgfx_interface::GpuAccess::CONSTANT_BUFFER,
     });
 
     SceneObject {
         vertex_buffers: vec![vertex_buffer0, vertex_buffer1],
+        constant_buffers: vec![model_data_buffer, view_buffer],
         pipelines: vec![pipeline],
     }
+}
+
+unsafe fn any_as_u8_slice<T: Sized>(p: &T) -> &[u8] {
+    ::core::slice::from_raw_parts((p as *const T) as *const u8, ::core::mem::size_of::<T>())
+}
+
+fn convert(matrix: &nalgebra_glm::Mat4x4) -> [f32; 16] {
+    let data = matrix.as_slice();
+    [
+        data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9],
+        data[10], data[11], data[12], data[13], data[14], data[15],
+    ]
 }
