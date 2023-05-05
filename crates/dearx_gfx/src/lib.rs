@@ -19,6 +19,18 @@ pub use renderer::{DrawCommandInfo, ICommandBuffer, IDrawInfo, IGraphicsObjectId
 #[cfg(not(target_arch = "wasm32"))]
 pub use scene::{Scene, SceneUpdater};
 
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct ModelData {
+    modelmatrix: [f32; 16],
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct ViewData {
+    projection_view_matrix: [f32; 16],
+}
+
 #[cfg(test)]
 mod tests {
     #[test]

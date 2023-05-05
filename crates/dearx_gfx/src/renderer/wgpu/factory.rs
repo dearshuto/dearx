@@ -14,6 +14,15 @@ impl<'a> Factory<'a> {
             format: render_target_format,
         }
     }
+
+    fn convert_gpu_access(gpu_access: sjgfx_interface::GpuAccess) -> wgpu::BufferUsages {
+        match gpu_access {
+            sjgfx_interface::GpuAccess::VERTEX_BUFFER => wgpu::BufferUsages::VERTEX,
+            sjgfx_interface::GpuAccess::INDEX_BUFFER => wgpu::BufferUsages::INDEX,
+            sjgfx_interface::GpuAccess::CONSTANT_BUFFER => wgpu::BufferUsages::UNIFORM,
+            _ => panic!(),
+        }
+    }
 }
 
 impl<'a> IFactory for Factory<'a> {
@@ -25,7 +34,7 @@ impl<'a> IFactory for Factory<'a> {
             .create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label: None,
                 contents: descriptor.data,
-                usage: wgpu::BufferUsages::VERTEX,
+                usage: Self::convert_gpu_access(descriptor.gpu_access),
             })
     }
 
