@@ -1,5 +1,4 @@
 use crate::{renderer::SceneObject, ModelData, ViewData};
-use nalgebra_glm;
 
 pub trait IFactory {
     type TBuffer;
@@ -64,6 +63,14 @@ pub fn deserialize<TFactory: IFactory>(
         bytemuck::cast_slice(&[-0.40f32, -0.25, 0.0, 0.10, -0.25, 0.0, -0.15, 0.25, 0.0]);
     let vertex_buffer_data1 =
         bytemuck::cast_slice(&[-0.10f32, 0.25, 0.0, 0.40, 0.25, 0.0, 0.15, -0.25, 0.0]);
+    let vertex_buffer_3d_data = bytemuck::cast_slice(&[
+        -0.25f32, -0.25, 0.0, // x
+        0.0, 0.0, -1.0, // nx
+        0.25, -0.25, 0.0, // y
+        0.0, 0.0, -1.0, // ny
+        0.0, 0.25, 0.0, // z
+        0.0, 0.0, -1.0, // nz
+    ]);
 
     let vertex_buffer0 = factory.create_buffer(&CreateBufferDescriptor {
         data: vertex_buffer_data0,
@@ -71,6 +78,10 @@ pub fn deserialize<TFactory: IFactory>(
     });
     let vertex_buffer1 = factory.create_buffer(&CreateBufferDescriptor {
         data: vertex_buffer_data1,
+        gpu_access: sjgfx_interface::GpuAccess::VERTEX_BUFFER,
+    });
+    let vertex_buffer_3d = factory.create_buffer(&CreateBufferDescriptor {
+        data: vertex_buffer_3d_data,
         gpu_access: sjgfx_interface::GpuAccess::VERTEX_BUFFER,
     });
 
@@ -85,7 +96,14 @@ pub fn deserialize<TFactory: IFactory>(
     });
 
     // PV の定数バッファ
-    let pv = nalgebra_glm::perspective_fov(0.14, 640.0, 480.0, 0.1, 100.0);
+    let view_matrix = nalgebra_glm::look_at_lh(
+        &nalgebra_glm::Vec3::new(3.0, 0.0, 3.0),
+        &nalgebra_glm::Vec3::zeros(),
+        &nalgebra_glm::Vec3::new(0.0, 1.0, 0.0),
+    );
+    let projection_matrix =
+        nalgebra_glm::perspective_fov_lh(30.0_f32.to_radians(), 640.0, 480.0, 0.1, 100.0);
+    let pv = (projection_matrix * view_matrix).transpose();
     let view_buffer = factory.create_buffer(&CreateBufferDescriptor {
         data: unsafe {
             any_as_u8_slice(&ViewData {
@@ -108,7 +126,7 @@ pub fn deserialize<TFactory: IFactory>(
     });
 
     SceneObject {
-        vertex_buffers: vec![vertex_buffer0, vertex_buffer1],
+        vertex_buffers: vec![vertex_buffer0, vertex_buffer1, vertex_buffer_3d],
         constant_buffers: vec![model_data_buffer, view_buffer],
         pipelines: vec![pipeline, pipeline_3d],
         descriptor_pool: vec![bind_group, bind_group_3d],
