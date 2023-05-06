@@ -36,6 +36,12 @@ impl Scene {
                     vertex_buffer_ids: vec![Id { index: 1 }],
                     draw_command_info: Id { index: 0 },
                 },
+                DrawInfo {
+                    pipeline_id: Id { index: 1 },
+                    descriptor_pool_id: Id { index: 1 },
+                    vertex_buffer_ids: vec![Id { index: 2 }],
+                    draw_command_info: Id { index: 0 },
+                },
             ],
         }
     }
