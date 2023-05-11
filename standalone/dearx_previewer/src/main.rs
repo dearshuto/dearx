@@ -31,7 +31,7 @@ async fn run() {
 
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
-        .with_inner_size(PhysicalSize::new(640, 480))
+        .with_inner_size(PhysicalSize::new(1280, 960))
         .build(&event_loop)
         .unwrap();
 
@@ -68,8 +68,8 @@ async fn run() {
     let config = wgpu::SurfaceConfiguration {
         usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
         format: swapchain_format,
-        width: 640,
-        height: 480,
+        width: 1280,
+        height: 960,
         present_mode: wgpu::PresentMode::Fifo,
         alpha_mode: swapchain_capabilities.alpha_modes[0],
         view_formats: vec![],
