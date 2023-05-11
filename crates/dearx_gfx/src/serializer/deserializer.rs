@@ -1,3 +1,5 @@
+use usd_rs::{LoadState, Path};
+
 use crate::{renderer::SceneObject, ModelData, ViewData};
 
 pub trait IFactory {
@@ -40,9 +42,6 @@ pub fn deserialize<TFactory: IFactory>(
     _data: &[u8],
     factory: &mut TFactory,
 ) -> SceneObject<TFactory::TBuffer, TFactory::TRenderPipeline, TFactory::TDescriptorPool> {
-    // let mut stream_reader = usd_rs::StreamReader::new(data);
-    // let _reader = usd_rs::AsciiReader::new(&mut stream_reader);
-
     // 2D 描画シェーダー
     let (pipeline, vertex_shader_binary, pixel_shader_binary) = create_render_pipeline(
         factory,
@@ -60,17 +59,11 @@ pub fn deserialize<TFactory: IFactory>(
     );
 
     let vertex_buffer_data0 =
-        bytemuck::cast_slice(&[-0.40f32, -0.25, 0.0, 0.10, -0.25, 0.0, -0.15, 0.25, 0.0]);
+        bytemuck::cast_slice(&[-0.40f32, -0.25, 0.0, -0.15, 0.25, 0.0, 0.10, -0.25, 0.0]);
     let vertex_buffer_data1 =
         bytemuck::cast_slice(&[-0.10f32, 0.25, 0.0, 0.40, 0.25, 0.0, 0.15, -0.25, 0.0]);
-    let vertex_buffer_3d_data = bytemuck::cast_slice(&[
-        -0.25f32, -0.25, 0.0, // x
-        0.0, 0.0, -1.0, // nx
-        0.25, -0.25, 0.0, // y
-        0.0, 0.0, -1.0, // ny
-        0.0, 0.25, 0.0, // z
-        0.0, 0.0, -1.0, // nz
-    ]);
+    let vertex_buffer_3d_data_vec = load_3d();
+    let vertex_buffer_3d_data = bytemuck::cast_slice(&vertex_buffer_3d_data_vec);
 
     let vertex_buffer0 = factory.create_buffer(&CreateBufferDescriptor {
         data: vertex_buffer_data0,
@@ -97,7 +90,7 @@ pub fn deserialize<TFactory: IFactory>(
 
     // PV の定数バッファ
     let view_matrix = nalgebra_glm::look_at_lh(
-        &nalgebra_glm::Vec3::new(3.0, 0.0, 3.0),
+        &nalgebra_glm::Vec3::new(5.0, 3.0, 5.0),
         &nalgebra_glm::Vec3::zeros(),
         &nalgebra_glm::Vec3::new(0.0, 1.0, 0.0),
     );
@@ -166,4 +159,54 @@ fn convert(matrix: &nalgebra_glm::Mat4x4) -> [f32; 16] {
         data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9],
         data[10], data[11], data[12], data[13], data[14], data[15],
     ]
+}
+
+fn load_3d() -> Vec<f32> {
+    let data = include_str!("../../resources/models/cube.usda");
+    let mut stream_reader = usd_rs::StreamReader::new(data.as_bytes());
+    let mut reader = usd_rs::AsciiReader::new(&mut stream_reader);
+    reader.read(LoadState::TopLevel);
+    reader.reconstruct_stage();
+
+    let default_data = vec![
+        -0.25f32, -0.25, 0.0, // x
+        0.0, 0.0, -1.0, // nx
+        0.25, -0.25, 0.0, // y
+        0.0, 0.0, -1.0, // ny
+        0.0, 0.25, 0.0, // z
+        0.0, 0.0, -1.0, // nz
+    ];
+    let Some(stage) = reader.try_get_stage() else {
+        return default_data;
+    };
+
+    let path = Path::new("/Cube", "");
+    let Some(prim) = stage.find_prim_at_path(&path) else {
+        return default_data;
+    };
+
+    let Some(child) = prim.try_get_child(0) else {
+        return default_data;
+     };
+
+    let Some(geom_mesh) = child.as_gemo_mesh() else {
+         return default_data;
+     };
+
+    // 頂点は 8 つ、Index を走査して頂点バッファーを構築する必要がある
+    let mut data = Vec::default();
+    for index in 0..(geom_mesh.get_index_count() / 3) {
+        for local_index in 0..3 {
+            let actual_index = geom_mesh.get_index(3 * index + local_index);
+            let point = geom_mesh.get_point(actual_index);
+            let normal = geom_mesh.get_normal(actual_index);
+            data.push(point.0);
+            data.push(point.1);
+            data.push(point.2);
+            data.push(normal.0);
+            data.push(normal.1);
+            data.push(normal.2);
+        }
+    }
+    data
 }

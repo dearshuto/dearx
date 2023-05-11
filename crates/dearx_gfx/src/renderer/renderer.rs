@@ -1,5 +1,6 @@
 extern crate nalgebra_glm as glm;
 
+#[derive(Clone)]
 pub enum DrawCommandInfo {
     Draw(i32),
     DrawInstanced(i32, i32),
