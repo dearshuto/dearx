@@ -9,6 +9,8 @@ pub struct Scene {
     #[allow(dead_code)]
     constant_buffers: Vec<wgpu::Buffer>,
 
+    draw_commands: Vec<DrawCommandInfo>,
+
     draw_infos: Vec<DrawInfo>,
 }
 
@@ -23,7 +25,14 @@ impl Scene {
             bind_group: scene_object.descriptor_pool,
             vertex_buffers: scene_object.vertex_buffers,
             constant_buffers: scene_object.constant_buffers,
+            draw_commands: vec![DrawCommandInfo::Draw(3), DrawCommandInfo::Draw(36)],
             draw_infos: vec![
+                DrawInfo {
+                    pipeline_id: Id { index: 1 },
+                    descriptor_pool_id: Id { index: 1 },
+                    vertex_buffer_ids: vec![Id { index: 2 }],
+                    draw_command_info: Id { index: 1 },
+                },
                 DrawInfo {
                     pipeline_id: Id { index: 0 },
                     descriptor_pool_id: Id { index: 0 },
@@ -34,12 +43,6 @@ impl Scene {
                     pipeline_id: Id { index: 0 },
                     descriptor_pool_id: Id { index: 0 },
                     vertex_buffer_ids: vec![Id { index: 1 }],
-                    draw_command_info: Id { index: 0 },
-                },
-                DrawInfo {
-                    pipeline_id: Id { index: 1 },
-                    descriptor_pool_id: Id { index: 1 },
-                    vertex_buffer_ids: vec![Id { index: 2 }],
                     draw_command_info: Id { index: 0 },
                 },
             ],
@@ -90,7 +93,8 @@ impl IScene for Scene {
         &self.vertex_buffers[index as usize]
     }
 
-    fn get_draw_info(&self, _id: Self::TGraphicsObjectId) -> crate::DrawCommandInfo {
-        DrawCommandInfo::Draw(3)
+    fn get_draw_info(&self, id: Self::TGraphicsObjectId) -> crate::DrawCommandInfo {
+        let index = id.index;
+        self.draw_commands[index as usize].clone()
     }
 }

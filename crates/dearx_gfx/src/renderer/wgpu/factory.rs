@@ -74,7 +74,7 @@ impl<'a> IFactory for Factory<'a> {
 
         let vertex_shader_reflection =
             sjgfx_util::ShaderReflection::new_from_biinary(descriptor.vertex_shader);
-        let attributes = vertex_shader_reflection
+        let mut attributes = vertex_shader_reflection
             .entry_point
             .attribures()
             .iter()
@@ -84,6 +84,7 @@ impl<'a> IFactory for Factory<'a> {
                 shader_location: attribute.location(),
             })
             .collect::<Vec<wgpu::VertexAttribute>>();
+        attributes.sort_by(|a, b| a.offset.partial_cmp(&b.offset).unwrap());
 
         self.device
             .create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -98,7 +99,10 @@ impl<'a> IFactory for Factory<'a> {
                         attributes: &attributes,
                     }],
                 },
-                primitive: wgpu::PrimitiveState::default(),
+                primitive: wgpu::PrimitiveState {
+                    cull_mode: Some(wgpu::Face::Back),
+                    ..Default::default()
+                },
                 depth_stencil: None,
                 multisample: wgpu::MultisampleState::default(),
                 fragment: fragment_state,
