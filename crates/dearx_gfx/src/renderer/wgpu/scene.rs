@@ -77,6 +77,7 @@ impl IScene for Scene {
     type TPipeline = wgpu::RenderPipeline;
     type TDescriptorPool = wgpu::BindGroup;
     type TGraphicsObjectId = Id;
+    type TEditId = i32;
 
     fn get_pipeline(&self, id: Self::TGraphicsObjectId) -> &Self::TPipeline {
         let index = id.index;
@@ -93,8 +94,10 @@ impl IScene for Scene {
         &self.vertex_buffers[index as usize]
     }
 
-    fn get_draw_info(&self, id: Self::TGraphicsObjectId) -> crate::DrawCommandInfo {
+    fn get_draw_command(&self, id: Self::TGraphicsObjectId) -> &crate::DrawCommandInfo {
         let index = id.index;
-        self.draw_commands[index as usize].clone()
+        &self.draw_commands[index as usize]
     }
+
+    fn edit_params<T>(&mut self, _id: &Self::TEditId, _value: &T) {}
 }

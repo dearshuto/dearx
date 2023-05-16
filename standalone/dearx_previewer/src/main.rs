@@ -3,11 +3,7 @@ use std::{
     time::Duration,
 };
 
-use dearx_gfx::{
-    serializer::deserialize,
-    wgpu::{Factory, Scene},
-    Renderer,
-};
+use dearx_gfx::{serializer::deserialize, wgpu::Factory, Renderer};
 use dearx_viewer::http::Client;
 use winit::{
     dpi::PhysicalSize,
@@ -110,7 +106,7 @@ async fn run() {
     let scene = {
         let mut factory = Factory::new(&device, swapchain_format);
         let scene_object = deserialize(&[], &mut factory);
-        Scene::new_graphics(&device, swapchain_format, scene_object)
+        dearx_gfx::Scene::from_scene_object(scene_object)
     };
     let renderer = Renderer::default();
 
@@ -147,7 +143,7 @@ async fn run() {
                         depth_stencil_attachment: None,
                     });
 
-                    renderer.render(&mut render_pass, &scene, scene.enumerate_draw_info());
+                    renderer.render(&mut render_pass, &scene, scene.get_draw_infos());
                 }
 
                 queue.submit(Some(encoder.finish()));

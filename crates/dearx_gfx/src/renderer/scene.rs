@@ -1,0 +1,87 @@
+use crate::{DrawCommandInfo, IScene, SceneObject};
+
+use super::{container::VectorDrawInfo, VectorContainer};
+
+pub trait IContainer {
+    type Id;
+    type TPipeline;
+    type TDescriptorPool;
+    type TBuffer;
+    type TDrawInfo;
+
+    fn from_scene_object(
+        scene_object: SceneObject<Self::TBuffer, Self::TPipeline, Self::TDescriptorPool>,
+    ) -> Self;
+
+    fn get_pipeline(&self, id: &Self::Id) -> &Self::TPipeline;
+
+    fn get_descriptor_pool(&self, id: &Self::Id) -> &Self::TDescriptorPool;
+
+    fn get_vertex_buffer(&self, id: &Self::Id) -> &Self::TBuffer;
+
+    fn get_draw_command(&self, id: &Self::Id) -> &DrawCommandInfo;
+
+    fn get_draw_infos(&self) -> &[Self::TDrawInfo];
+}
+
+pub struct Scene<
+    TRenderPipeline,
+    TDescriptorPool,
+    TBuffer,
+    TContainer = VectorContainer<TRenderPipeline, TDescriptorPool, TBuffer>,
+> where
+    TContainer: IContainer<
+        TPipeline = TRenderPipeline,
+        TDescriptorPool = TDescriptorPool,
+        TBuffer = TBuffer,
+    >,
+{
+    container: TContainer,
+}
+
+// Vector 実装の特殊処理
+impl<TBuffer, TPipeline, TDescriptorPool>
+    Scene<TPipeline, TDescriptorPool, TBuffer, VectorContainer<TPipeline, TDescriptorPool, TBuffer>>
+{
+    pub fn from_scene_object(
+        scene_object: SceneObject<TBuffer, TPipeline, TDescriptorPool>,
+    ) -> Self {
+        let container = VectorContainer::from_scene_object(scene_object);
+        Self { container }
+    }
+
+    pub fn get_draw_infos(&self) -> &[VectorDrawInfo] {
+        self.container.get_draw_infos()
+    }
+}
+
+impl<TBuffer, TPipeline, TDescriptorPool, TContainer> IScene
+    for Scene<TPipeline, TDescriptorPool, TBuffer, TContainer>
+where
+    TContainer:
+        IContainer<TBuffer = TBuffer, TPipeline = TPipeline, TDescriptorPool = TDescriptorPool>,
+{
+    type TBuffer = TBuffer;
+    type TPipeline = TPipeline;
+    type TDescriptorPool = TDescriptorPool;
+    type TGraphicsObjectId = TContainer::Id;
+    type TEditId = i32;
+
+    fn get_pipeline(&self, id: Self::TGraphicsObjectId) -> &Self::TPipeline {
+        self.container.get_pipeline(&id)
+    }
+
+    fn get_descriptor_pool(&self, id: Self::TGraphicsObjectId) -> &Self::TDescriptorPool {
+        self.container.get_descriptor_pool(&id)
+    }
+
+    fn get_vertex_buffer(&self, id: Self::TGraphicsObjectId) -> &Self::TBuffer {
+        self.container.get_vertex_buffer(&id)
+    }
+
+    fn get_draw_command(&self, id: Self::TGraphicsObjectId) -> &DrawCommandInfo {
+        self.container.get_draw_command(&id)
+    }
+
+    fn edit_params<T>(&mut self, _id: &Self::TEditId, _value: &T) {}
+}

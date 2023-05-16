@@ -1,6 +1,6 @@
 use crate::{IDrawInfo, IGraphicsObjectId};
 
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Id {
     pub(crate) index: i32,
 }
