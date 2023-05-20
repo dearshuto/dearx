@@ -1,6 +1,9 @@
 use crate::{DrawCommandInfo, IScene, SceneObject};
 
-use super::{container::VectorDrawInfo, VectorContainer};
+use super::{
+    container::{TableDrawInfo, VectorDrawInfo},
+    TableContainer, VectorContainer,
+};
 
 pub trait IContainer {
     type Id;
@@ -51,6 +54,20 @@ impl<TBuffer, TPipeline, TDescriptorPool>
     }
 
     pub fn get_draw_infos(&self) -> &[VectorDrawInfo] {
+        self.container.get_draw_infos()
+    }
+}
+
+// Table 実装の特殊処理
+impl<TBuffer, TPipeline, TDescriptorPool>
+    Scene<TPipeline, TDescriptorPool, TBuffer, TableContainer<TPipeline, TDescriptorPool, TBuffer>>
+{
+    pub fn new_table_scene(scene_object: SceneObject<TBuffer, TPipeline, TDescriptorPool>) -> Self {
+        let container = TableContainer::from_scene_object(scene_object);
+        Self { container }
+    }
+
+    pub fn get_draw_infos(&self) -> &[TableDrawInfo] {
         self.container.get_draw_infos()
     }
 }
