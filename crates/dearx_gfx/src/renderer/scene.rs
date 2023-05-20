@@ -77,6 +77,4 @@ where
     fn get_draw_command(&self, id: Self::TGraphicsObjectId) -> &DrawCommandInfo {
         self.container.get_draw_command(&id)
     }
-
-    fn edit_params<T>(&mut self, _id: &Self::TEditId, _value: &T) {}
 }

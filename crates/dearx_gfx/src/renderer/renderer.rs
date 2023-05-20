@@ -34,8 +34,6 @@ pub trait IScene {
     fn get_vertex_buffer(&self, id: Self::TGraphicsObjectId) -> &Self::TBuffer;
 
     fn get_draw_command(&self, id: Self::TGraphicsObjectId) -> &DrawCommandInfo;
-
-    fn edit_params<T>(&mut self, id: &Self::TEditId, value: &T);
 }
 
 pub trait ICommandBuffer<'a> {
