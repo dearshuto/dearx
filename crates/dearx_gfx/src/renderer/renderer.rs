@@ -24,7 +24,8 @@ pub trait IScene {
     type TBuffer;
     type TPipeline;
     type TDescriptorPool;
-    type TGraphicsObjectId: IGraphicsObjectId;
+    type TGraphicsObjectId;
+    type TEditId;
 
     fn get_pipeline(&self, id: Self::TGraphicsObjectId) -> &Self::TPipeline;
 
@@ -32,7 +33,9 @@ pub trait IScene {
 
     fn get_vertex_buffer(&self, id: Self::TGraphicsObjectId) -> &Self::TBuffer;
 
-    fn get_draw_info(&self, id: Self::TGraphicsObjectId) -> DrawCommandInfo;
+    fn get_draw_command(&self, id: Self::TGraphicsObjectId) -> &DrawCommandInfo;
+
+    fn edit_params<T>(&mut self, id: &Self::TEditId, value: &T);
 }
 
 pub trait ICommandBuffer<'a> {
@@ -107,9 +110,9 @@ impl Renderer {
 
         // 描画コマンド
         let draw_command_id = draw_info.get_draw_command_info_id();
-        let draw_command = scene.get_draw_info(draw_command_id);
+        let draw_command = scene.get_draw_command(draw_command_id);
         match draw_command {
-            DrawCommandInfo::Draw(vertex_count) => command_buffer.draw(vertex_count),
+            DrawCommandInfo::Draw(vertex_count) => command_buffer.draw(*vertex_count),
             DrawCommandInfo::DrawInstanced(_, _) => { /* todo */ }
         }
     }

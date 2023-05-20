@@ -6,18 +6,15 @@ pub mod serializer;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod component;
 mod renderer;
-#[cfg(not(target_arch = "wasm32"))]
-mod scene;
 
 pub use api::{IApi, IBuffer, IDevice, ITexture};
 
 pub use renderer::wgpu;
+pub use renderer::{
+    DrawCommandInfo, ICommandBuffer, IDrawInfo, IGraphicsObjectId, IScene, SceneObject,
+};
 #[cfg(not(target_arch = "wasm32"))]
-pub use renderer::Renderer;
-pub use renderer::{DrawCommandInfo, ICommandBuffer, IDrawInfo, IGraphicsObjectId, IScene};
-
-#[cfg(not(target_arch = "wasm32"))]
-pub use scene::{Scene, SceneUpdater};
+pub use renderer::{Renderer, Scene};
 
 #[repr(C)]
 #[derive(Clone, Copy)]

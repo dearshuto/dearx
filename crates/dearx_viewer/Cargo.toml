@@ -12,6 +12,9 @@ prost = { version = "0.11" }
 hyper = "*"
 bytes = "1.0"
 serde = { version = "1.0.158", features = ["derive"] }
+dearx_gfx = { path = "../dearx_gfx" }
+uuid = { version = "1.3.0", features = ["v4", "js"] }
+wgpu = "0.15.1"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tonic = { version = "0.8.3" }
@@ -24,7 +27,7 @@ tonic = { version = "0.8.3", default-features = false }
 tonic-build = { version = "0.9.1", features = ["prost"] }
 
 [dev-dependencies]
-wgpu = "0.15.1"
+wgpu = "*"
 winit = "*"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
