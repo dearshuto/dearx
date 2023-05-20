@@ -150,7 +150,6 @@ impl<TPipeline, TDescriptorPool, TBuffer> IContainer
     }
 
     fn get_draw_infos(&self) -> &[Self::TDrawInfo] {
-        // TODO
-        &[]
+        &self.draw_infos
     }
 }
