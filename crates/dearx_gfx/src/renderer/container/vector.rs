@@ -1,6 +1,5 @@
-use crate::{
-    renderer::scene::IContainer, DrawCommandInfo, IDrawInfo, IGraphicsObjectId, SceneObject,
-};
+use super::IContainer;
+use crate::{DrawCommandInfo, IDrawInfo, IGraphicsObjectId, SceneObject};
 
 pub struct VectorContainer<TPipeline, TDescriptorPool, TBuffer> {
     render_pipeline: Vec<TPipeline>,
