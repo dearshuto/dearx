@@ -31,8 +31,7 @@ async fn run() {
         "My egui App",
         options,
         Box::new(|_cc| Box::new(SimpleGui::new(app))),
-    )
-    .unwrap();
+    );
     task.await.unwrap();
 }
 
