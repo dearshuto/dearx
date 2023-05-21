@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use crate::{
-    renderer::scene::IContainer, DrawCommandInfo, IDrawInfo, IGraphicsObjectId, SceneObject,
-};
+use crate::{DrawCommandInfo, IDrawInfo, IGraphicsObjectId, SceneObject};
+
+use super::IContainer;
 
 pub struct TableDrawInfo {
     pub(crate) pipeline_id: uuid::Uuid,
