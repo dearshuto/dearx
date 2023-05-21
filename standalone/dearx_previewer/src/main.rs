@@ -61,7 +61,7 @@ async fn run() {
 
     let swapchain_capabilities = surface.get_capabilities(&adapter);
     let swapchain_format = swapchain_capabilities.formats[0];
-    let config = wgpu::SurfaceConfiguration {
+    let mut config = wgpu::SurfaceConfiguration {
         usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
         format: swapchain_format,
         width: 1280,
@@ -114,6 +114,17 @@ async fn run() {
         *control_flow = ControlFlow::Wait;
 
         match event {
+            Event::WindowEvent {
+                event: WindowEvent::Resized(size),
+                ..
+            } => {
+                // Reconfigure the surface with the new size
+                config.width = size.width;
+                config.height = size.height;
+                surface.configure(&device, &config);
+                // On macos the window needs to be redrawn manually after resizing
+                // window.request_redraw();
+            }
             Event::RedrawRequested(_) => {
                 let app = app_for_loop.lock().unwrap();
                 let frame = surface
