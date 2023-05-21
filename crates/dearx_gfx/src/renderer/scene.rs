@@ -20,6 +20,20 @@ pub struct Scene<
     container: TContainer,
 }
 
+pub struct PropertyId<T> {
+    _marker: std::marker::PhantomData<T>,
+}
+
+// 実装
+impl<TBuffer, TPipeline, TDescriptorPool, TContainer>
+    Scene<TPipeline, TDescriptorPool, TBuffer, TContainer>
+where
+    TContainer:
+        IContainer<TBuffer = TBuffer, TPipeline = TPipeline, TDescriptorPool = TDescriptorPool>,
+{
+    pub fn edit_param(&mut self, _id: &PropertyId<TContainer::Id>) {}
+}
+
 // Vector 実装の特殊処理
 impl<TBuffer, TPipeline, TDescriptorPool>
     Scene<TPipeline, TDescriptorPool, TBuffer, VectorContainer<TPipeline, TDescriptorPool, TBuffer>>
