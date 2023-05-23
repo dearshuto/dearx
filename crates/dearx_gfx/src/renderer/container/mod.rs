@@ -23,6 +23,8 @@ pub trait IContainer {
 
     fn get_vertex_buffer(&self, id: &Self::Id) -> &Self::TBuffer;
 
+    fn get_constant_buffer_mut(&mut self, id: &Self::Id) -> &mut Self::TBuffer;
+
     fn get_draw_command(&self, id: &Self::Id) -> &DrawCommandInfo;
 
     fn get_draw_infos(&self) -> &[Self::TDrawInfo];

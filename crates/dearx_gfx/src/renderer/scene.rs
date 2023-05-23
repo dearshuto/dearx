@@ -20,18 +20,29 @@ pub struct Scene<
     container: TContainer,
 }
 
+pub trait IEditableBuffer {
+    fn edit<T>(&mut self, offset: isize, value: &T);
+}
+
 pub struct PropertyId<T> {
+    instance_id: T,
+    offset: isize,
     _marker: std::marker::PhantomData<T>,
 }
 
-// 実装
-impl<TBuffer, TPipeline, TDescriptorPool, TContainer>
+// 編集機能の実装
+impl<TBuffer: IEditableBuffer, TPipeline, TDescriptorPool, TContainer>
     Scene<TPipeline, TDescriptorPool, TBuffer, TContainer>
 where
     TContainer:
         IContainer<TBuffer = TBuffer, TPipeline = TPipeline, TDescriptorPool = TDescriptorPool>,
 {
-    pub fn edit_param(&mut self, _id: &PropertyId<TContainer::Id>) {}
+    pub fn edit_param(&mut self, property_id: &PropertyId<TContainer::Id>) {
+        let id = &property_id.instance_id;
+        let buffer = self.container.get_constant_buffer_mut(id);
+        let value = 0.0f32;
+        buffer.edit(property_id.offset, &value);
+    }
 }
 
 // Vector 実装の特殊処理

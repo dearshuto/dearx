@@ -94,6 +94,10 @@ impl<TPipeline, TDescriptorPool, TBuffer> IContainer
         &self.vertex_buffers[*id as usize]
     }
 
+    fn get_constant_buffer_mut(&mut self, id: &Self::Id) -> &mut Self::TBuffer {
+        &mut self.constant_buffers[*id as usize]
+    }
+
     fn get_draw_command(&self, id: &Self::Id) -> &DrawCommandInfo {
         &self.draw_commands[*id as usize]
     }
