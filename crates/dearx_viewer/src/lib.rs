@@ -1,8 +1,13 @@
+mod communicator;
+pub mod embeded_client;
+mod embeded_server;
 pub mod http;
 mod i_server_logic;
 pub mod proto;
 pub mod wgpu;
 
+pub use communicator::{Communicator, IClient, IServer};
+pub use embeded_server::{EmbededClient, EmbededServer};
 pub use i_server_logic::IServerLogic;
 
 pub fn add(left: usize, right: usize) -> usize {
