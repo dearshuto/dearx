@@ -1,5 +1,4 @@
 use dearx_application::App;
-use dearx_viewer::EmbededServer;
 use dearx_workspace::DocumentInfo;
 use eframe::egui;
 use std::sync::{Arc, Mutex};
@@ -11,10 +10,20 @@ async fn main() {
         renderer: eframe::Renderer::Wgpu,
         ..Default::default()
     };
-    eframe::run_native("", options, Box::new(|cc| Box::new(SimpleGui::new(cc))));
+    let _ = eframe::run_native("", options, Box::new(|cc| Box::new(SimpleGui::new(cc))));
 }
 
-#[derive(Default)]
+struct RenderResources {
+    #[allow(dead_code)]
+    app: Arc<Mutex<App>>,
+
+    #[allow(dead_code)]
+    scene: dearx_gfx::Scene<wgpu::RenderPipeline, wgpu::BindGroup, wgpu::Buffer>,
+
+    #[allow(dead_code)]
+    renderer: dearx_gfx::Renderer,
+}
+
 struct SimpleGui {
     #[allow(dead_code)]
     app: Arc<Mutex<App>>,
@@ -23,7 +32,7 @@ struct SimpleGui {
 impl SimpleGui {
     pub fn new(context: &eframe::CreationContext) -> Self {
         let state = context.wgpu_render_state.as_ref().unwrap();
-        let device = state.device;
+        let device = &state.device;
         let target_format = state.target_format;
 
         let scene = {
@@ -34,18 +43,39 @@ impl SimpleGui {
         let renderer = dearx_gfx::Renderer::default();
 
         let app = std::sync::Arc::new(Mutex::new(App::new()));
-        let server = EmbededServer::new_shared(app.clone());
+
+        let render_resources = RenderResources {
+            app: app.clone(),
+            scene,
+            renderer,
+        };
+
+        let _ = context
+            .wgpu_render_state
+            .as_ref()
+            .unwrap()
+            .renderer
+            .write()
+            .paint_callback_resources
+            .insert(render_resources);
 
         Self { app }
     }
 
     fn render_custom(&self, ui: &mut egui::Ui) {
-        let (rect, response) =
-            ui.allocate_exact_size(egui::Vec2::splat(300.0), egui::Sense::drag());
+        let (rect, _response) =
+            ui.allocate_exact_size(egui::Vec2::new(480.0, 360.0), egui::Sense::drag());
 
         let callback_backend = egui_wgpu::CallbackFn::new()
-            .prepare(move |_, _, _, _| Vec::new())
-            .paint(move |_, _, _| ());
+            .prepare(move |_device, _queue, _command_encoder, _render_resources| Vec::new())
+            .paint(move |_, render_pass, render_resources| {
+                // ここで描画コマンドをつむ
+                let render_resource: &RenderResources = render_resources.get().unwrap();
+                let renderer = &render_resource.renderer;
+                let scene = &render_resource.scene;
+
+                renderer.render(render_pass, scene, scene.get_draw_infos());
+            });
         let callback = egui::PaintCallback {
             rect,
             callback: std::sync::Arc::new(callback_backend),
@@ -57,10 +87,12 @@ impl SimpleGui {
 impl eframe::App for SimpleGui {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Hello World");
-            egui::Frame::canvas(ui.style()).show(ui, |ui| {
-                self.render_custom(ui);
-            });
+            // プレビュー
+            egui::Frame::canvas(ui.style())
+                .fill(egui::Color32::BLACK)
+                .show(ui, |ui| {
+                    self.render_custom(ui);
+                });
 
             // ドキュメントを追加するボタン
             if ui.button("Add").clicked() {
