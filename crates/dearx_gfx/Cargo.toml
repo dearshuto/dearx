@@ -11,7 +11,7 @@ http-viewer = []
 [dependencies]
 nalgebra-glm = "0.3"
 naga = "0.11.0"
-wgpu = {version = "0.15.1", features = ["spirv", "webgl", "glsl"]}
+wgpu = {version = "0.16.0", features = ["spirv", "webgl", "glsl"]}
 futures = {version = "*" }
 bytemuck = "*"
 sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
@@ -28,7 +28,7 @@ tonic = { version = "0.8.3", default-features = false }
 
 [dev-dependencies]
 sjvi = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-wgpu = "0.15.1"
+wgpu = "0.16.0"
 winit = "*"
 hyper = "*"
 serde_json = "*"
