@@ -38,8 +38,42 @@ pub struct CreateDescriptorPoolDescriptor<'a, TBuffer> {
     pub constant_buffers: &'a [&'a TBuffer],
 }
 
+pub fn deserialize_from_usda<TFactory: IFactory>(
+    data: &[u8],
+) -> SceneObject<TFactory::TBuffer, TFactory::TRenderPipeline, TFactory::TDescriptorPool> {
+    let mut stream_reader = usd_rs::StreamReader::new(data);
+    let mut reader = usd_rs::AsciiReader::new(&mut stream_reader);
+    reader.read(usd_rs::LoadState::TopLevel);
+    reader.reconstruct_stage();
+
+    let Some(stage) = reader.try_get_stage() else {
+	return SceneObject {
+	    vertex_buffers: Default::default(),
+	    constant_buffers: Default::default(),
+	    pipelines: Default::default(),
+	    descriptor_pool: Default::default()
+	}
+    };
+
+    let Some(prim) = stage.find_prim_at_path(&usd_rs::Path::new("AAA", "")) else {
+	return SceneObject {
+	    vertex_buffers: Default::default(),
+	    constant_buffers: Default::default(),
+	    pipelines: Default::default(),
+	    descriptor_pool: Default::default()
+	}
+    };
+
+    SceneObject {
+        vertex_buffers: Default::default(),
+        constant_buffers: Default::default(),
+        pipelines: Default::default(),
+        descriptor_pool: Default::default(),
+    }
+}
+
 pub fn deserialize<TFactory: IFactory>(
-    _data: &[u8],
+    data: &[u8],
     factory: &mut TFactory,
 ) -> SceneObject<TFactory::TBuffer, TFactory::TRenderPipeline, TFactory::TDescriptorPool> {
     // 2D 描画シェーダー
