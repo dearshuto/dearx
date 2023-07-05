@@ -10,6 +10,7 @@ uuid = { version = "1.0.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
 im = "*"
 tokio = { version = "1.18.2", features = ["full"] }
 dearx_macro = { path = "../dearx_macro" }
+notify = "*"
 
 [dev-dependencies]
 egui = "0.18.1"

@@ -1,6 +1,7 @@
 mod document;
 mod document_info;
 mod project;
+pub mod settings;
 mod workspace;
 
 pub use document::{Document, DocumentId};
