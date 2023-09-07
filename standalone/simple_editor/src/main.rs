@@ -140,4 +140,9 @@ impl eframe::App for SimpleGui {
             }
         });
     }
+
+    fn on_close_event(&mut self) -> bool {
+        println!("Closing");
+        true
+    }
 }
