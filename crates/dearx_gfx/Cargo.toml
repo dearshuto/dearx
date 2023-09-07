@@ -14,12 +14,12 @@ naga = "0.11.0"
 wgpu = {version = "0.16.0", features = ["spirv", "webgl", "glsl"]}
 futures = {version = "*" }
 bytemuck = "*"
-sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
-sjgfx-wgpu = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjgfx-interface = { git = "https://github.com/dearshuto/gfx-rs.git", rev = "0162cbbdbd62a93b5df73861100d207bca2d2009" }
+sjgfx-wgpu = { git = "https://github.com/dearshuto/gfx-rs.git", rev = "0162cbbdbd62a93b5df73861100d207bca2d2009" }
 uuid = { version = "1.3.0", features = ["v4", "js"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", rev = "0162cbbdbd62a93b5df73861100d207bca2d2009" }
 usd-rs = { git = "https://github.com/dearshuto/usd-rs.git", branch = "develop" }
 tonic = { version = "0.8.3" }
 
@@ -38,4 +38,4 @@ tokio = { version = "1.0.0", features = ["full"] }
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 
 [target.'cfg(not(target_arch = "wasm32"))'.build-dependencies]
-sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", branch = "develop" }
+sjgfx-util = { git = "https://github.com/dearshuto/gfx-rs.git", rev = "0162cbbdbd62a93b5df73861100d207bca2d2009" }
