@@ -17,6 +17,10 @@ path = "dearx_server/src/main.rs"
 name = "simple_editor"
 path = "simple_editor/src/main.rs"
 
+[[bin]]
+name = "debug_editor"
+path = "debug_editor/src/main.rs"
+
 [dependencies]
 bytemuck = "*"
 egui = "0.21.0"
